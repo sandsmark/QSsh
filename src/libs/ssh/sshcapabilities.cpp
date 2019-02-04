@@ -108,7 +108,7 @@ const QList<QByteArray> SshCapabilities::CompressionAlgorithms
 const QByteArray SshCapabilities::SshConnectionService("ssh-connection");
 
 QList<QByteArray> SshCapabilities::commonCapabilities(const QList<QByteArray> &myCapabilities,
-                                               const QList<QByteArray> &serverCapabilities)
+    const QList<QByteArray> &serverCapabilities, QString group)
 {
     QList<QByteArray> capabilities;
     foreach (const QByteArray &myCapability, myCapabilities) {
@@ -122,17 +122,19 @@ QList<QByteArray> SshCapabilities::commonCapabilities(const QList<QByteArray> &m
     throw SshServerException(SSH_DISCONNECT_KEY_EXCHANGE_FAILED,
         "Server and client capabilities do not match.",
         QCoreApplication::translate("SshConnection",
-            "Server and client capabilities don't match. "
-            "Client list was: %1.\nServer list was %2.")
+            "Server and client %1 capabilities don't match.\n"
+            "Client list: %2\n"
+            "Server list: %3")
+            .arg(group)
             .arg(QString::fromLocal8Bit(listAsByteArray(myCapabilities).data()))
             .arg(QString::fromLocal8Bit(listAsByteArray(serverCapabilities).data())));
 
 }
 
 QByteArray SshCapabilities::findBestMatch(const QList<QByteArray> &myCapabilities,
-    const QList<QByteArray> &serverCapabilities)
+    const QList<QByteArray> &serverCapabilities, QString group)
 {
-    return commonCapabilities(myCapabilities, serverCapabilities).first();
+    return commonCapabilities(myCapabilities, serverCapabilities, group).first();
 }
 
 int SshCapabilities::ecdsaIntegerWidthInBytes(const QByteArray &ecdsaAlgo)

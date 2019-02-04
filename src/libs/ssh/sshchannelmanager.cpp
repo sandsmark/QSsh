@@ -199,7 +199,7 @@ AbstractSshChannel *SshChannelManager::lookupChannel(quint32 channelId,
     bool allowNotFound)
 {
     ChannelIterator it = lookupChannelAsIterator(channelId, allowNotFound);
-    return it == m_channels.end() ? 0 : it.value();
+    return it == m_channels.end() ? nullptr : it.value();
 }
 
 QSsh::SshRemoteProcess::Ptr SshChannelManager::createRemoteProcess(const QByteArray &command)
@@ -279,7 +279,7 @@ SshTcpIpForwardServer::Ptr SshChannelManager::createForwardServer(const QString 
         switch (state) {
         case SshTcpIpForwardServer::Closing:
             m_listeningForwardServers.removeOne(server);
-            // fall through
+            [[clang::fallthrough]];
         case SshTcpIpForwardServer::Initializing:
             m_waitingForwardServers.append(server);
             break;

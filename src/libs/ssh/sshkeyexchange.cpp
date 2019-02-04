@@ -111,22 +111,22 @@ bool SshKeyExchange::sendDhInitPacket(const SshIncomingPacket &serverKexInit)
     qCDebug(sshLog, "First packet follows: %d", kexInitParams.firstKexPacketFollows);
 
     m_kexAlgoName = SshCapabilities::findBestMatch(SshCapabilities::KeyExchangeMethods,
-                                                   kexInitParams.keyAlgorithms.names);
+                                                   kexInitParams.keyAlgorithms.names,"KeyExchange");
     m_serverHostKeyAlgo = SshCapabilities::findBestMatch(SshCapabilities::PublicKeyAlgorithms,
-            kexInitParams.serverHostKeyAlgorithms.names);
+            kexInitParams.serverHostKeyAlgorithms.names,"HostKey");
     determineHashingAlgorithm(kexInitParams, true);
     determineHashingAlgorithm(kexInitParams, false);
 
     m_encryptionAlgo
         = SshCapabilities::findBestMatch(SshCapabilities::EncryptionAlgorithms,
-              kexInitParams.encryptionAlgorithmsClientToServer.names);
+              kexInitParams.encryptionAlgorithmsClientToServer.names,"Encryption");
     m_decryptionAlgo
         = SshCapabilities::findBestMatch(SshCapabilities::EncryptionAlgorithms,
-              kexInitParams.encryptionAlgorithmsServerToClient.names);
+              kexInitParams.encryptionAlgorithmsServerToClient.names,"Decryption");
     SshCapabilities::findBestMatch(SshCapabilities::CompressionAlgorithms,
-        kexInitParams.compressionAlgorithmsClientToServer.names);
+        kexInitParams.compressionAlgorithmsClientToServer.names,"Compression Client to Server");
     SshCapabilities::findBestMatch(SshCapabilities::CompressionAlgorithms,
-        kexInitParams.compressionAlgorithmsServerToClient.names);
+        kexInitParams.compressionAlgorithmsServerToClient.names,"Compression Server to Client");
 
     AutoSeeded_RNG rng;
     if (m_kexAlgoName.startsWith(SshCapabilities::EcdhKexNamePrefix)) {
@@ -173,7 +173,7 @@ void SshKeyExchange::sendNewKeysPacket(const SshIncomingPacket &dhReply,
 
         std::unique_ptr<PK_Ops::Key_Agreement> dhOp = m_dhKey->create_key_agreement_op(rng, "Raw", "base");
         std::vector<byte> encodedF = BigInt::encode(reply.f);
-        encodedK = dhOp->agree(0, encodedF.data(), encodedF.size(), 0, 0);
+        encodedK = dhOp->agree(0, encodedF.data(), encodedF.size(), nullptr, 0);
         printData("y", AbstractSshPacket::encodeMpInt(m_dhKey->get_y()));
         printData("f", AbstractSshPacket::encodeMpInt(reply.f));
         m_dhKey.reset();
@@ -184,7 +184,7 @@ void SshKeyExchange::sendNewKeysPacket(const SshIncomingPacket &dhReply,
         concatenatedData += AbstractSshPacket::encodeString(reply.q_s);
         std::unique_ptr<PK_Ops::Key_Agreement> ecdhOp = m_ecdhKey->create_key_agreement_op(rng, "Raw", "base");
 
-        encodedK = ecdhOp->agree(0, convertByteArray(reply.q_s), reply.q_s.count(), 0, 0);
+        encodedK = ecdhOp->agree(0, convertByteArray(reply.q_s), reply.q_s.count(), nullptr, 0);
         m_ecdhKey.reset();
     }
 
@@ -252,7 +252,7 @@ void SshKeyExchange::determineHashingAlgorithm(const SshKeyExchangeInit &kexInit
     const QList<QByteArray> &serverCapabilities = serverToClient
             ? kexInit.macAlgorithmsServerToClient.names
             : kexInit.macAlgorithmsClientToServer.names;
-    *algo = SshCapabilities::findBestMatch(SshCapabilities::MacAlgorithms, serverCapabilities);
+    *algo = SshCapabilities::findBestMatch(SshCapabilities::MacAlgorithms, serverCapabilities,"MacAlgorithms");
 }
 
 void SshKeyExchange::checkHostKey(const QByteArray &hostKey)

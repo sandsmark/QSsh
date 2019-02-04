@@ -43,7 +43,7 @@ std::string SshKeyPasswordRetriever::get_passphrase()
     const bool hasGui = dynamic_cast<QApplication *>(QApplication::instance());
     if (hasGui) {
         bool ok;
-        const QString &password = QInputDialog::getText(0,
+        const QString &password = QInputDialog::getText(nullptr,
             QCoreApplication::translate("QSsh::Ssh", "Password Required"),
             QCoreApplication::translate("QSsh::Ssh", "Please enter the password for your private key."),
             QLineEdit::Password, QString(), &ok);

@@ -47,7 +47,7 @@ class SftpDirNode;
 class SftpFileNode
 {
 public:
-    SftpFileNode() : parent(0) { }
+    SftpFileNode() : parent(nullptr) { }
     virtual ~SftpFileNode() { }
 
     QString path;
@@ -99,9 +99,9 @@ using namespace Internal;
 SftpFileSystemModel::SftpFileSystemModel(QObject *parent)
     : QAbstractItemModel(parent), d(new SftpFileSystemModelPrivate)
 {
-    d->sshConnection = 0;
+    d->sshConnection = nullptr;
     d->rootDirectory = QLatin1Char('/');
-    d->rootNode = 0;
+    d->rootNode = nullptr;
     d->statJobId = SftpInvalidJob;
 }
 
@@ -132,7 +132,7 @@ void SftpFileSystemModel::setRootDirectory(const QString &path)
     beginResetModel();
     d->rootDirectory = path;
     delete d->rootNode;
-    d->rootNode = 0;
+    d->rootNode = nullptr;
     d->lsOps.clear();
     d->statJobId = SftpInvalidJob;
     endResetModel();
@@ -268,17 +268,17 @@ void SftpFileSystemModel::statRootDirectory()
 void SftpFileSystemModel::shutDown()
 {
     if (d->sftpChannel) {
-        disconnect(d->sftpChannel.data(), 0, this, 0);
+        disconnect(d->sftpChannel.data(), nullptr, this, nullptr);
         d->sftpChannel->closeChannel();
         d->sftpChannel.clear();
     }
     if (d->sshConnection) {
-        disconnect(d->sshConnection, 0, this, 0);
+        disconnect(d->sshConnection, nullptr, this, nullptr);
         QSsh::releaseConnection(d->sshConnection);
-        d->sshConnection = 0;
+        d->sshConnection = nullptr;
     }
     delete d->rootNode;
-    d->rootNode = 0;
+    d->rootNode = nullptr;
 }
 
 void SftpFileSystemModel::handleSshConnectionFailure()

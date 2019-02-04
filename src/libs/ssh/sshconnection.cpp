@@ -529,7 +529,7 @@ void SshConnectionPrivate::handleServiceAcceptPacket()
     switch (m_connParams.authenticationType) {
     case SshConnectionParameters::AuthenticationTypeTryAllPasswordBasedMethods:
         m_triedAllPasswordBasedMethods = false;
-        // Fall-through.
+        [[clang::fallthrough]];
     case SshConnectionParameters::AuthenticationTypePassword:
         m_sendFacility.sendUserAuthByPasswordRequestPacket(m_connParams.userName().toUtf8(),
                 SshCapabilities::SshConnectionService, m_connParams.password().toUtf8());
@@ -864,7 +864,7 @@ void SshConnectionPrivate::authenticateWithPublicKey()
     QByteArray signature;
     if (m_connParams.authenticationType == SshConnectionParameters::AuthenticationTypeAgent) {
         // Agent is not needed anymore after this point.
-        disconnect(&SshAgent::instance(), 0, this, 0);
+        disconnect(&SshAgent::instance(), nullptr, this, nullptr);
 
         key = m_agentKeyToUse;
         signature = m_agentSignature;
@@ -953,10 +953,10 @@ void SshConnectionPrivate::closeConnection(SshErrorCode sshError,
     m_error = userError;
     m_errorString = userErrorString;
     m_timeoutTimer.stop();
-    disconnect(m_socket, 0, this, 0);
-    disconnect(&m_timeoutTimer, 0, this, 0);
+    disconnect(m_socket, nullptr, this, nullptr);
+    disconnect(&m_timeoutTimer, nullptr, this, nullptr);
     m_keepAliveTimer.stop();
-    disconnect(&m_keepAliveTimer, 0, this, 0);
+    disconnect(&m_keepAliveTimer, nullptr, this, nullptr);
     try {
         m_channelManager->closeAllChannels(SshChannelManager::CloseAllAndReset);
         m_sendFacility.sendDisconnectPacket(sshError, serverErrorString);

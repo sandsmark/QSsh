@@ -74,8 +74,8 @@ void SshAbstractCryptoFacility::clearKeys()
     m_cipherBlockSize = 0;
     m_macLength = 0;
     m_sessionId.clear();
-    m_pipe.reset(0);
-    m_hMac.reset(0);
+    m_pipe.reset(nullptr);
+    m_hMac.reset(nullptr);
 }
 
 SshAbstractCryptoFacility::Mode SshAbstractCryptoFacility::getMode(const QByteArray &algoName)

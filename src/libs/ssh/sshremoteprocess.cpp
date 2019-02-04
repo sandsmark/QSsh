@@ -199,7 +199,7 @@ void SshRemoteProcess::sendSignal(Signal signal)
 {
     try {
         if (isRunning()) {
-            const char *signalString = 0;
+            const char *signalString = nullptr;
             for (size_t i = 0; i < sizeof signalMap/sizeof *signalMap && !signalString; ++i) {
                 if (signalMap[i].signalEnum == signal)
                     signalString = signalMap[i].signalString;

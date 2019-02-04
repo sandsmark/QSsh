@@ -76,9 +76,9 @@ public:
     static const QByteArray SshConnectionService;
 
     static QList<QByteArray> commonCapabilities(const QList<QByteArray> &myCapabilities,
-                                                const QList<QByteArray> &serverCapabilities);
+                                                const QList<QByteArray> &serverCapabilities, QString group);
     static QByteArray findBestMatch(const QList<QByteArray> &myCapabilities,
-        const QList<QByteArray> &serverCapabilities);
+        const QList<QByteArray> &serverCapabilities, QString group);
 
     static int ecdsaIntegerWidthInBytes(const QByteArray &ecdsaAlgo);
     static QByteArray ecdsaPubKeyAlgoForKeyWidth(int keyWidthInBytes);

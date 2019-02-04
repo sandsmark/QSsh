@@ -203,14 +203,14 @@ void SshRemoteProcessRunner::setState(int newState)
     d->m_state = static_cast<State>(newState);
     if (d->m_state == Inactive) {
         if (d->m_process) {
-            disconnect(d->m_process.data(), 0, this, 0);
+            disconnect(d->m_process.data(), nullptr, this, nullptr);
             d->m_process->close();
             d->m_process.clear();
         }
         if (d->m_connection) {
-            disconnect(d->m_connection, 0, this, 0);
+            disconnect(d->m_connection, nullptr, this, nullptr);
             QSsh::releaseConnection(d->m_connection);
-            d->m_connection = 0;
+            d->m_connection = nullptr;
         }
     }
 }
