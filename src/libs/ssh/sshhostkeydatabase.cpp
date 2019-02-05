@@ -37,6 +37,7 @@
 #include <QFile>
 #include <QHash>
 #include <QString>
+#include <QTextCodec>
 
 namespace QSsh {
 
@@ -117,6 +118,11 @@ SshHostKeyDatabase::KeyLookupResult SshHostKeyDatabase::matchHostKey(const QStri
 void SshHostKeyDatabase::insertHostKey(const QString &hostName, const QByteArray &key)
 {
     d->hostKeys.insert(hostName, key);
+}
+
+QString SshHostKeyDatabase::retrieveHostKey(const QString &hostName)
+{
+    return QTextCodec::codecForMib(1015)->toUnicode(d->hostKeys.find(hostName).value());
 }
 
 } // namespace QSsh

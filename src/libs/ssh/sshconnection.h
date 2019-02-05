@@ -122,7 +122,7 @@ public:
     /*!
      * \brief Returns the port set with setPort()
      */
-    quint16 port() const { return url.port(); }
+    int port() const { return url.port(); }
 
     /*!
      * \brief Returns the username set with setUsername()
@@ -158,6 +158,7 @@ public:
      * \param password
      */
     void setPassword(const QString &password) { url.setPassword(password); }
+    QString hostKey() {return hostKeyDatabase->retrieveHostKey(this->host());}
 
     QUrl url;
     QString privateKeyFile;
@@ -215,7 +216,7 @@ public:
      * \param serverInfo serverInfo connection parameters
      * \param parent Parent object.
      */
-    explicit SshConnection(const SshConnectionParameters &serverInfo, QObject *parent = 0);
+    explicit SshConnection(const SshConnectionParameters &serverInfo, QObject *parent = nullptr);
 
     void connectToHost();
     void disconnectFromHost();

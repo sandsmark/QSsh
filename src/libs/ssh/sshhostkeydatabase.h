@@ -62,6 +62,7 @@ public:
     bool store(const QString &filePath, QString *error = 0) const;
     KeyLookupResult matchHostKey(const QString &hostName, const QByteArray &key) const;
     void insertHostKey(const QString &hostName, const QByteArray &key);
+    QString retrieveHostKey(const QString &hostName);
 
 private:
     SshHostKeyDatabase();

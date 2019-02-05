@@ -50,7 +50,7 @@ class QSSH_EXPORT SshRemoteProcessRunner : public QObject
     Q_OBJECT
 
 public:
-    SshRemoteProcessRunner(QObject *parent = 0);
+    SshRemoteProcessRunner(QObject *parent = nullptr);
     ~SshRemoteProcessRunner();
 
     void run(const QByteArray &command, const SshConnectionParameters &sshParams);
