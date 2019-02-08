@@ -56,17 +56,16 @@ public:
         KeyLookupMismatch
     };
 
+    SshHostKeyDatabase();
     ~SshHostKeyDatabase();
 
-    bool load(const QString &filePath, QString *error = 0);
-    bool store(const QString &filePath, QString *error = 0) const;
+    bool load(const QString &filePath, QString *error = nullptr);
+    bool store(const QString &filePath, QString *error = nullptr) const;
     KeyLookupResult matchHostKey(const QString &hostName, const QByteArray &key) const;
     void insertHostKey(const QString &hostName, const QByteArray &key);
-    QString retrieveHostKey(const QString &hostName);
+    QByteArray retrieveHostKey(const QString &hostName);
 
 private:
-    SshHostKeyDatabase();
-
     class SshHostKeyDatabasePrivate;
     SshHostKeyDatabasePrivate * const d;
 };

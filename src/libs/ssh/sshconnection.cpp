@@ -65,6 +65,7 @@ SshConnectionParameters::SshConnectionParameters() :
 {
     url.setPort(0);
     options |= SshIgnoreDefaultProxy;
+    hostKeyDatabase = SshHostKeyDatabasePtr(new SshHostKeyDatabase);
 }
 
 static inline bool equals(const SshConnectionParameters &p1, const SshConnectionParameters &p2)
@@ -106,6 +107,11 @@ SshConnection::SshConnection(const SshConnectionParameters &serverInfo, QObject 
         Qt::QueuedConnection);
     connect(d, &Internal::SshConnectionPrivate::error, this,
             &SshConnection::error, Qt::QueuedConnection);
+}
+
+QString SshConnection::getHostPublicKey(){
+    //return d->hostKeyFingerprint(d->m_connParams.getHostPublicKey());
+    return d->hostKeyFingerprint();
 }
 
 void SshConnection::connectToHost()
@@ -237,6 +243,10 @@ SshConnectionPrivate::SshConnectionPrivate(SshConnection *conn,
 SshConnectionPrivate::~SshConnectionPrivate()
 {
     disconnect();
+}
+
+QString SshConnectionPrivate::hostKeyFingerprint() {
+    return m_keyExchange->hostKeyFingerprint();
 }
 
 void SshConnectionPrivate::setupPacketHandlers()

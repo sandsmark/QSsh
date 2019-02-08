@@ -158,7 +158,6 @@ public:
      * \param password
      */
     void setPassword(const QString &password) { url.setPassword(password); }
-    QString hostKey() {return hostKeyDatabase->retrieveHostKey(this->host());}
 
     QUrl url;
     QString privateKeyFile;
@@ -254,8 +253,8 @@ public:
 
     // -1 if an error occurred, number of channels closed otherwise.
     int closeAllChannels();
-
     int channelCount() const;
+    QString getHostPublicKey();
 
     /*!
      * \brief The X11 display name used for X11 forwarding

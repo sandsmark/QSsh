@@ -35,6 +35,7 @@
 #include "sshexception_p.h"
 #include "sshincomingpacket_p.h"
 #include "sshsendfacility_p.h"
+#include "sshkeyexchange_p.h"
 
 #include <QHash>
 #include <QList>
@@ -100,6 +101,7 @@ public:
     SshStateInternal state() const { return m_state; }
     SshError errorState() const { return m_error; }
     QString errorString() const { return m_errorString; }
+    QString hostKeyFingerprint();
 
 signals:
     void connected();

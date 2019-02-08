@@ -120,9 +120,9 @@ void SshHostKeyDatabase::insertHostKey(const QString &hostName, const QByteArray
     d->hostKeys.insert(hostName, key);
 }
 
-QString SshHostKeyDatabase::retrieveHostKey(const QString &hostName)
+QByteArray SshHostKeyDatabase::retrieveHostKey(const QString &hostName)
 {
-    return QTextCodec::codecForMib(1015)->toUnicode(d->hostKeys.find(hostName).value());
+   return d->hostKeys.find(hostName).value();
 }
 
 } // namespace QSsh
