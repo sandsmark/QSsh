@@ -46,13 +46,8 @@
 #include <botan/dsa.h>
 #include <botan/rsa.h>
 #include <botan/pk_ops.h>
-#include <botan/pk_keys.h>
 #include <botan/ecdh.h>
 #include <botan/ecdsa.h>
-
-#include <botan/hash.h>
-#include <botan/hex.h>
-#include <botan/base64.h>
 
 #ifdef CREATOR_SSH_DEBUG
 #include <iostream>
@@ -86,7 +81,6 @@ SshKeyExchange::SshKeyExchange(const SshConnectionParameters &connParams,
                                SshSendFacility &sendFacility)
     : m_connParams(connParams), m_sendFacility(sendFacility)
 {
-    //sigKey = QScopedPointer<Public_Key>(new Botan::Public_Key);
 }
 
 SshKeyExchange::~SshKeyExchange() {}
@@ -207,7 +201,7 @@ void SshKeyExchange::sendNewKeysPacket(const SshIncomingPacket &dhReply,
 
     printData("H", m_h);
 
-//QScopedPointer<Public_Key> sigKey;
+    QScopedPointer<Public_Key> sigKey;
     if (m_serverHostKeyAlgo == SshCapabilities::PubKeyDss) {
         const DL_Group group(reply.hostKeyParameters.at(0), reply.hostKeyParameters.at(1),
             reply.hostKeyParameters.at(2));
@@ -238,6 +232,8 @@ void SshKeyExchange::sendNewKeysPacket(const SshIncomingPacket &dhReply,
     checkHostKey(reply.k_s);
 
     m_sendFacility.sendNewKeysPacket();
+    m_hostFingerprint = QString::fromStdString(sigKey->fingerprint_public("SHA-256"));
+
 }
 
 QByteArray SshKeyExchange::hashAlgoForKexAlgo() const
@@ -296,21 +292,11 @@ void SshKeyExchange::throwHostKeyException()
                              SSH_TR("Host key of machine \"%1\" has changed.")
                              .arg(m_connParams.host()));
 }
+
 QString SshKeyExchange::hostKeyFingerprint()
 {
-    std::string b;
-   // std::unique_ptr<Botan::HashFunction> hash(Botan::HashFunction::create("SHA-256"));
-    //hash->update(reinterpret_cast<uint8_t*>(a.data_ptr()),std::size_t(a.length()));
-    //return QString::fromStdString(Botan::base64_encode(hash->final()));
-    try {
-    b = sigKey->fingerprint_public("SHA-256");
-
-    } catch(std::exception& e) {
-
-    }
-    return QString::fromStdString(b);
-
-    }
+  return m_hostFingerprint;
+}
 
 } // namespace Internal
 } // namespace QSsh

@@ -108,7 +108,7 @@ const QList<QByteArray> SshCapabilities::CompressionAlgorithms
 const QByteArray SshCapabilities::SshConnectionService("ssh-connection");
 
 QList<QByteArray> SshCapabilities::commonCapabilities(const QList<QByteArray> &myCapabilities,
-    const QList<QByteArray> &serverCapabilities, QString group)
+                                               const QList<QByteArray> &serverCapabilities, QString group)
 {
     QList<QByteArray> capabilities;
     foreach (const QByteArray &myCapability, myCapabilities) {

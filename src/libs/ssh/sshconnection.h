@@ -254,7 +254,7 @@ public:
     // -1 if an error occurred, number of channels closed otherwise.
     int closeAllChannels();
     int channelCount() const;
-    QString getHostPublicKey();
+    QString hostKeyFingerprint();
 
     /*!
      * \brief The X11 display name used for X11 forwarding

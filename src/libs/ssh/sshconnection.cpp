@@ -109,8 +109,8 @@ SshConnection::SshConnection(const SshConnectionParameters &serverInfo, QObject 
             &SshConnection::error, Qt::QueuedConnection);
 }
 
-QString SshConnection::getHostPublicKey(){
-    //return d->hostKeyFingerprint(d->m_connParams.getHostPublicKey());
+QString SshConnection::hostKeyFingerprint()
+{
     return d->hostKeyFingerprint();
 }
 
@@ -245,8 +245,9 @@ SshConnectionPrivate::~SshConnectionPrivate()
     disconnect();
 }
 
-QString SshConnectionPrivate::hostKeyFingerprint() {
-    return m_keyExchange->hostKeyFingerprint();
+QString SshConnectionPrivate::hostKeyFingerprint()
+{
+    return fingerprint;
 }
 
 void SshConnectionPrivate::setupPacketHandlers()
@@ -512,6 +513,7 @@ void SshConnectionPrivate::handleKeyExchangeReplyPacket()
 
     m_keyExchange->sendNewKeysPacket(m_incomingPacket,
         ClientId.left(ClientId.size() - 2));
+    fingerprint = m_keyExchange->hostKeyFingerprint();
     m_sendFacility.recreateKeys(*m_keyExchange);
     m_keyExchangeState = NewKeysSent;
 }

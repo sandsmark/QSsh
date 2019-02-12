@@ -35,7 +35,6 @@
 #include "sshexception_p.h"
 #include "sshincomingpacket_p.h"
 #include "sshsendfacility_p.h"
-#include "sshkeyexchange_p.h"
 
 #include <QHash>
 #include <QList>
@@ -184,6 +183,7 @@ private:
     SshError m_error;
     QString m_errorString;
     QScopedPointer<SshKeyExchange> m_keyExchange;
+    QString fingerprint;
     QTimer m_timeoutTimer;
     QTimer m_keepAliveTimer;
     bool m_ignoreNextPacket;

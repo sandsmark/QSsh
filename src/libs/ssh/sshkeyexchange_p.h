@@ -33,7 +33,6 @@
 
 #include "sshconnection.h"
 
-#include <botan/pk_keys.h>
 #include <QByteArray>
 #include <QScopedPointer>
 
@@ -84,7 +83,6 @@ private:
     QByteArray m_serverId;
     QByteArray m_clientKexInitPayload;
     QByteArray m_serverKexInitPayload;
-    QScopedPointer<Botan::Public_Key> sigKey;
     QScopedPointer<Botan::DH_PrivateKey> m_dhKey;
     QScopedPointer<Botan::ECDH_PrivateKey> m_ecdhKey;
     QByteArray m_kexAlgoName;
@@ -98,6 +96,7 @@ private:
     std::unique_ptr<Botan::HashFunction> m_hash;
     const SshConnectionParameters m_connParams;
     SshSendFacility &m_sendFacility;
+    QString m_hostFingerprint;
 };
 
 } // namespace Internal

@@ -37,7 +37,6 @@
 #include <QFile>
 #include <QHash>
 #include <QString>
-#include <QTextCodec>
 
 namespace QSsh {
 
