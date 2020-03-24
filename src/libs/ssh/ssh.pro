@@ -51,7 +51,6 @@ SOURCES = $$PWD/sshsendfacility.cpp \
     $$PWD/sshconnectionmanager.cpp \
     $$PWD/sshkeypasswordretriever.cpp \
     $$PWD/sftpfilesystemmodel.cpp \
-    $$PWD/sshinit.cpp \
     $$PWD/sshdirecttcpiptunnel.cpp \
     $$PWD/sshhostkeydatabase.cpp \
     $$PWD/sshlogging.cpp \
@@ -102,7 +101,6 @@ HEADERS = $$PUBLIC_HEADERS \
     $$PWD/sftpchannel_p.h \
     $$PWD/sshkeypasswordretriever_p.h \
     $$PWD/sshdirecttcpiptunnel_p.h \
-    $$PWD/sshinit_p.h \
     $$PWD/sshlogging_p.h \
     $$PWD/sshtcpipforwardserver_p.h \
     $$PWD/sshtcpiptunnel_p.h \

@@ -33,7 +33,6 @@
 #include "sshbotanconversions_p.h"
 #include "sshcapabilities_p.h"
 #include "ssh_global.h"
-#include "sshinit_p.h"
 #include "sshpacket_p.h"
 #include "sshlogging_p.h"
 
@@ -60,7 +59,6 @@ using namespace Internal;
 
 SshKeyGenerator::SshKeyGenerator() : m_type(Rsa)
 {
-    initSsh();
 }
 
 bool SshKeyGenerator::generateKeys(KeyType type, PrivateKeyFormat format, int keySize,

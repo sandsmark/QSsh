@@ -39,12 +39,9 @@
 #include "sshdirecttcpiptunnel.h"
 #include "sshtcpipforwardserver.h"
 #include "sshexception_p.h"
-#include "sshinit_p.h"
 #include "sshkeyexchange_p.h"
 #include "sshremoteprocess.h"
 #include "sshlogging_p.h"
-
-#include <botan/init.h>
 
 #include <QFile>
 #include <QMutex>
@@ -90,7 +87,6 @@ bool operator!=(const SshConnectionParameters &p1, const SshConnectionParameters
 SshConnection::SshConnection(const SshConnectionParameters &serverInfo, QObject *parent)
     : QObject(parent)
 {
-    Internal::initSsh();
     qRegisterMetaType<QSsh::SshError>("QSsh::SshError");
     qRegisterMetaType<QSsh::SftpJobId>("QSsh::SftpJobId");
     qRegisterMetaType<QSsh::SftpFileInfo>("QSsh::SftpFileInfo");
