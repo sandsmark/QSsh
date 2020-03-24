@@ -72,7 +72,7 @@ static const char *keyFileVar(TestType testType)
 
 static bool canUseFallbackValue(TestType testType)
 {
-    return testType == TestType::Tunnel && getHostFromEnvironment() == "localhost";
+    return testType == TestType::Tunnel && getHostFromEnvironment() == QLatin1String("localhost");
 }
 
 static quint16 getPortFromEnvironment(TestType testType)
@@ -112,7 +112,7 @@ static QString getKeyFileFromEnvironment(TestType testType)
 static SshConnectionParameters getParameters(TestType testType)
 {
     SshConnectionParameters params;
-    params.setHost(testType == TestType::Tunnel ? QString("localhost")
+    params.setHost(testType == TestType::Tunnel ? QLatin1String("localhost")
                                                          : getHostFromEnvironment());
     params.setPort(getPortFromEnvironment(testType));
     params.setUserName(getUserFromEnvironment(testType));
@@ -132,11 +132,11 @@ static SshConnectionParameters getParameters(TestType testType)
             QSKIP("No hostname provided. Set QTC_SSH_TEST_HOST."); \
         } \
         if (params.userName().isEmpty()) \
-            QSKIP(qPrintable(QString::fromLatin1("No user name provided. Set %1.") \
-                .arg(userVar(testType)))); \
+            QSKIP(qPrintable(QStringLiteral("No user name provided. Set %1.") \
+                .arg(QString::fromLatin1(userVar(testType))))); \
         if (params.password().isEmpty() && params.privateKeyFile.isEmpty()) \
-            QSKIP(qPrintable(QString::fromLatin1("No authentication data provided. " \
-                  "Set %1 or %2.").arg(pwdVar(testType), keyFileVar(testType)))); \
+            QSKIP(qPrintable(QStringLiteral("No authentication data provided. " \
+                  "Set %1 or %2.").arg(QString::fromLatin1(pwdVar(testType)), QString::fromLatin1(keyFileVar(testType))))); \
     } while (false)
 
 class tst_Ssh : public QObject
@@ -176,7 +176,7 @@ void tst_Ssh::directTunnel()
     QVERIFY2(targetServer.listen(QHostAddress::LocalHost), qPrintable(targetServer.errorString()));
     const quint16 targetPort = targetServer.serverPort();
     const SshDirectTcpIpTunnel::Ptr tunnel
-            = connection.createDirectTunnel("localhost", 1024, "localhost", targetPort);
+            = connection.createDirectTunnel(QStringLiteral("localhost"), 1024, QStringLiteral("localhost"), targetPort);
     QEventLoop loop;
     const auto connectionHandler = [&targetServer, &targetSocket, &loop, &tunnelInitialized] {
         targetSocket = targetServer.nextPendingConnection();
@@ -269,7 +269,7 @@ void tst_Ssh::errorHandling_data()
     QTest::addColumn<ErrorList>("expectedErrors");
 
     QTest::newRow("no host")
-            << QString("hgdfxgfhgxfhxgfchxgcf") << quint16(12345)
+            << QStringLiteral("hgdfxgfhgxfhxgfchxgcf") << quint16(12345)
             << SshConnectionParameters::AuthenticationTypeTryAllPasswordBasedMethods
             << QString() << QString() << QString() << ErrorList{SshSocketError, SshTimeoutError};
     const QString theHost = getHostFromEnvironment();
@@ -279,18 +279,18 @@ void tst_Ssh::errorHandling_data()
     QTest::newRow("no user")
             << theHost << thePort
             << SshConnectionParameters::AuthenticationTypeTryAllPasswordBasedMethods
-            << QString("dumdidumpuffpuff") << QString("whatever") << QString()
+            << QStringLiteral("dumdidumpuffpuff") << QStringLiteral("whatever") << QString()
             << ErrorList{SshAuthenticationError};
     QTest::newRow("wrong password")
             << theHost << thePort
             << SshConnectionParameters::AuthenticationTypeTryAllPasswordBasedMethods
-            << QString("root") << QString("thiscantpossiblybeapasswordcanit") << QString()
+            << QStringLiteral("root") << QStringLiteral("thiscantpossiblybeapasswordcanit") << QString()
             << ErrorList{SshAuthenticationError};
     QTest::newRow("non-existing key file")
             << theHost << thePort
             << SshConnectionParameters::AuthenticationTypePublicKey
-            << QString("root") << QString()
-            << QString("somefilenamethatwedontexpecttocontainavalidkey")
+            << QStringLiteral("root") << QString()
+            << QStringLiteral("somefilenamethatwedontexpecttocontainavalidkey")
             << ErrorList{SshKeyFileError};
 
     // TODO: Valid key file not known to the server
@@ -373,7 +373,7 @@ void tst_Ssh::forwardTunnel()
     // Establish a tunnel
     connect(server.data(), &QSsh::SshTcpIpForwardServer::newConnection, &loop, &QEventLoop::quit);
     QTcpSocket targetSocket;
-    targetSocket.connectToHost("localhost", targetPort);
+    targetSocket.connectToHost(QStringLiteral("localhost"), targetPort);
     timer.start();
     loop.exec();
     QVERIFY(timer.isActive());
@@ -592,7 +592,7 @@ void tst_Ssh::remoteProcessInput()
     timer.stop();
     QVERIFY(catProcess->isRunning());
 
-    static QString testString = "x\r\n";
+    static const QLatin1String testString("x\r\n");
     connect(catProcess.data(), &QIODevice::readyRead, &loop, &QEventLoop::quit);
     QTextStream stream(catProcess.data());
     stream << testString;
@@ -665,15 +665,15 @@ void tst_Ssh::sftp()
     QVERIFY2(dirForFilesToUpload.isValid(), qPrintable(dirForFilesToUpload.errorString()));
     QVERIFY2(dirForFilesToDownload.isValid(), qPrintable(dirForFilesToDownload.errorString()));
     static const auto getRemoteFilePath = [](const QString &localFileName) {
-        return QString("/tmp/").append(localFileName).append(".upload");
+        return QStringLiteral("/tmp/").append(localFileName).append(QLatin1String(".upload"));
     };
     const auto getDownloadFilePath = [&dirForFilesToDownload](const QString &localFileName) {
-        return QString(dirForFilesToDownload.path()).append('/').append(localFileName);
+        return dirForFilesToDownload.path().append(QLatin1Char('/')).append(localFileName);
     };
     std::srand(QDateTime::currentDateTime().toSecsSinceEpoch());
     for (int i = 0; i < 1000; ++i) {
-        const QString fileName = "sftptestfile" + QString::number(i + 1);
-        QFile file(dirForFilesToUpload.path() + '/' + fileName);
+        const QString fileName = QLatin1String("sftptestfile") + QString::number(i + 1);
+        QFile file(dirForFilesToUpload.path() + QLatin1Char('/') + fileName);
         QVERIFY2(file.open(QIODevice::WriteOnly), qPrintable(file.errorString()));
         int content[1024 / sizeof(int)];
         for (size_t j = 0; j < sizeof content / sizeof content[0]; ++j)
@@ -687,8 +687,8 @@ void tst_Ssh::sftp()
         QVERIFY(uploadJob != SftpInvalidJob);
         jobs << uploadJob;
     }
-    const QString bigFileName("sftpbigfile");
-    QFile bigFile(dirForFilesToUpload.path() + '/' + bigFileName);
+    static const QLatin1String bigFileName("sftpbigfile");
+    QFile bigFile(dirForFilesToUpload.path() + QLatin1Char('/') + bigFileName);
     QVERIFY2(bigFile.open(QIODevice::WriteOnly), qPrintable(bigFile.errorString()));
     const int bigFileSize = 100 * 1024 * 1024;
     const int blockSize = 8192;
@@ -717,7 +717,7 @@ void tst_Ssh::sftp()
             = QDir(dirForFilesToUpload.path()).entryList(QDir::Files);
     QCOMPARE(allUploadedFileNames.size(), 1001);
     for (const QString &fileName : allUploadedFileNames) {
-        const QString localFilePath = dirForFilesToUpload.path() + '/' + fileName;
+        const QString localFilePath = dirForFilesToUpload.path() + QLatin1Char('/') + fileName;
         const QString remoteFilePath = getRemoteFilePath(fileName);
         const QString downloadFilePath = getDownloadFilePath(fileName);
         const SftpJobId downloadJob = sftpChannel->downloadFile(remoteFilePath, downloadFilePath,
@@ -734,9 +734,9 @@ void tst_Ssh::sftp()
 
     // Compare contents of uploaded and downloaded files
     for (const QString &fileName : allUploadedFileNames) {
-        QFile originalFile(dirForFilesToUpload.path() + '/' + fileName);
+        QFile originalFile(dirForFilesToUpload.path() + QLatin1Char('/') + fileName);
         QVERIFY2(originalFile.open(QIODevice::ReadOnly), qPrintable(originalFile.errorString()));
-        QFile downloadedFile(dirForFilesToDownload.path() + '/' + fileName);
+        QFile downloadedFile(dirForFilesToDownload.path() + QLatin1Char('/') + fileName);
         QVERIFY2(downloadedFile.open(QIODevice::ReadOnly),
                  qPrintable(downloadedFile.errorString()));
         QVERIFY(originalFile.fileName() != downloadedFile.fileName());
@@ -766,7 +766,7 @@ void tst_Ssh::sftp()
     QVERIFY(jobs.empty());
 
     // Create a directory on the remote system
-    const QString remoteDirPath = "/tmp/sftptest-" + QDateTime::currentDateTime().toString();
+    const QString remoteDirPath = QLatin1String("/tmp/sftptest-") + QDateTime::currentDateTime().toString();
     const SftpJobId mkdirJob = sftpChannel->createDirectory(remoteDirPath);
     QVERIFY(mkdirJob != SftpInvalidJob);
     jobs << mkdirJob;
@@ -808,7 +808,7 @@ void tst_Ssh::sftp()
     QCOMPARE(remoteFileInfo.size(), 2);
     for (const SftpFileInfo &fi : remoteFileInfo) {
         QCOMPARE(fi.type, FileTypeDirectory);
-        QVERIFY2(fi.name == "." || fi.name == "..", qPrintable(fi.name));
+        QVERIFY2(fi.name == QLatin1String(".") || fi.name == QLatin1String(".."), qPrintable(fi.name));
     }
     QVERIFY(remoteFileInfo.first().name != remoteFileInfo.last().name);
 
@@ -886,33 +886,33 @@ static QString expandVariables(const QString &input)
     for (int i = 0; i < result.length();) {
         QChar c = result.at(i++);
         if (state == BASE) {
-            if (c == '$')
+            if (c == QLatin1Char('$'))
                 state = OPTIONALVARIABLEBRACE;
         } else if (state == OPTIONALVARIABLEBRACE) {
-            if (c == '{') {
+            if (c == QLatin1Char('{')) {
                 state = BRACEDVARIABLE;
                 vStart = i;
-            } else if (c.isLetterOrNumber() || c == '_') {
+            } else if (c.isLetterOrNumber() || c == QLatin1Char('_')) {
                 state = VARIABLE;
                 vStart = i - 1;
             } else {
                 state = BASE;
             }
         } else if (state == BRACEDVARIABLE) {
-            if (c == '}') {
+            if (c == QLatin1Char('}')) {
                 const QByteArray varName = result.mid(vStart, i - 1 - vStart).toLocal8Bit();
                 if (qEnvironmentVariableIsSet(varName.constData())) {
-                    const QByteArray varValue = qgetenv(varName.constData());
+                    const QString varValue = QString::fromLocal8Bit(qgetenv(varName.constData()));
                     result.replace(vStart - 2, i - vStart + 2, varValue);
                     i = vStart - 2 + varValue.length();
                 }
                 state = BASE;
             }
         } else if (state == VARIABLE) {
-            if (!c.isLetterOrNumber() && c != '_') {
+            if (!c.isLetterOrNumber() && c != QLatin1Char('_')) {
                 const QByteArray varName = result.mid(vStart, i - vStart - 1).toLocal8Bit();
                 if (qEnvironmentVariableIsSet(varName.constData())) {
-                    const QByteArray varValue = qgetenv(varName.constData());
+                    const QString varValue = QString::fromLocal8Bit(qgetenv(varName.constData()));
                     result.replace(vStart - 1, i - vStart, varValue);
                     i = vStart - 1 + varValue.length();
                 }
@@ -924,7 +924,7 @@ static QString expandVariables(const QString &input)
     if (state == VARIABLE) {
         const QByteArray varName = result.mid(vStart).toLocal8Bit();
         if (qEnvironmentVariableIsSet(varName.constData())) {
-            result.replace(vStart - 1, result.length() - vStart + 1, qgetenv(varName.constData()));
+            result.replace(vStart - 1, result.length() - vStart + 1, QString::fromLocal8Bit(qgetenv(varName.constData())));
         }
     }
 #endif//Q_OS_WIN
@@ -945,9 +945,9 @@ static QFileInfo fromUserInput(const QString &filename)
 static QFileInfoList systemPath()
 {
 #ifdef Q_OS_WIN
-    const QChar separator = ';';
+    static const QLatin1Char separator(';');
 #else
-    const QChar separator = ':';
+    static const QLatin1Char separator(':');
 #endif
 
     const QStringList pathComponents = QString::fromLocal8Bit(qgetenv("PATH"))
@@ -1004,7 +1004,7 @@ static QFileInfo searchInPath(const QString &executable)
 
     QSet<QString> alreadyChecked;
 
-    if (executable.contains('/'))
+    if (executable.contains(QLatin1Char('/')))
         return QFileInfo();
 
     for (const QFileInfo &p : systemPath()) {
@@ -1021,11 +1021,11 @@ void tst_Ssh::x11InfoRetriever_data()
     QTest::addColumn<QString>("displayName");
     QTest::addColumn<bool>("successExpected");
 
-    const QFileInfo xauthCommand = searchInPath("xauth");
+    const QFileInfo xauthCommand = searchInPath(QStringLiteral("xauth"));
     const QString displayName = QLatin1String(qgetenv("DISPLAY"));
     const bool canSucceed = xauthCommand.exists() && !displayName.isEmpty();
     QTest::newRow(canSucceed ? "suitable host" : "unsuitable host") << displayName << canSucceed;
-    QTest::newRow("invalid display name") << QString("dummy") << false;
+    QTest::newRow("invalid display name") << QStringLiteral("dummy") << false;
 }
 
 void tst_Ssh::x11InfoRetriever()

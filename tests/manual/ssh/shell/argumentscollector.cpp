@@ -81,13 +81,13 @@ SshConnectionParameters ArgumentsCollector::collect(bool &success) const
                 continue;
             }
             if (!checkForNoProxy(pos, parameters.options, proxySettingGiven))
-                throw ArgumentErrorException(QLatin1String("unknown option ") + m_arguments.at(pos));
+                throw ArgumentErrorException(QStringLiteral("unknown option ") + m_arguments.at(pos));
         }
 
         Q_ASSERT(pos <= m_arguments.count());
         if (pos == m_arguments.count() - 1) {
             if (!checkForNoProxy(pos, parameters.options, proxySettingGiven))
-                throw ArgumentErrorException(QLatin1String("unknown option ") + m_arguments.at(pos));
+                throw ArgumentErrorException(QStringLiteral("unknown option ") + m_arguments.at(pos));
         }
 
         if (!authTypeGiven) {
@@ -96,12 +96,12 @@ SshConnectionParameters ArgumentsCollector::collect(bool &success) const
         }
 
         if (parameters.userName().isEmpty())
-            parameters.setUserName(QProcessEnvironment::systemEnvironment().value("USER"));
+            parameters.setUserName(QProcessEnvironment::systemEnvironment().value(QStringLiteral("USER")));
         if (parameters.userName().isEmpty())
-            throw ArgumentErrorException(QLatin1String("No user name given."));
+            throw ArgumentErrorException(QStringLiteral("No user name given."));
 
         if (parameters.host().isEmpty())
-            throw ArgumentErrorException(QLatin1String("No host given."));
+            throw ArgumentErrorException(QStringLiteral("No host given."));
 
         parameters.setPort(portGiven ? port : 22);
         if (!timeoutGiven)

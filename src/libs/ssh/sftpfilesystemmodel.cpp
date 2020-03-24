@@ -170,11 +170,11 @@ QVariant SftpFileSystemModel::data(const QModelIndex &index, int role) const
         switch (node->fileInfo.type) {
         case FileTypeRegular:
         case FileTypeOther:
-            return QIcon(":/ssh/images/unknownfile.png");
+            return QIcon(QStringLiteral(":/ssh/images/unknownfile.png"));
         case FileTypeDirectory:
-            return QIcon(":/ssh/images/dir.png");
+            return QIcon(QStringLiteral(":/ssh/images/dir.png"));
         case FileTypeUnknown:
-            return QIcon(":/ssh/images/help.png"); // Shows a question mark.
+            return QIcon(QStringLiteral(":/ssh/images/help.png")); // Shows a question mark.
         }
     }
     if (index.column() == 1) {

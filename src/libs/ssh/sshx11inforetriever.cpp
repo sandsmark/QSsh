@@ -65,8 +65,11 @@ SshX11InfoRetriever::SshX11InfoRetriever(const QString &displayName, QObject *pa
         switch (m_state) {
         case State::RunningGenerate:
             m_state = State::RunningList;
-            m_xauthProc->start("xauth", QStringList{"-f", m_xauthFile->fileName(), "list",
-                                                    m_displayName});
+            m_xauthProc->start(QStringLiteral("xauth"), QStringList{
+                                   QStringLiteral("-f"),
+                                   m_xauthFile->fileName(),
+                                   QStringLiteral("list"),
+                                   m_displayName});
             break;
         case State::RunningList: {
             const QByteArrayList outputLines = m_xauthProc->readAllStandardOutput().split('\n');
@@ -81,13 +84,13 @@ SshX11InfoRetriever::SshX11InfoRetriever(const QString &displayName, QObject *pa
             }
             X11DisplayInfo displayInfo;
             displayInfo.displayName = m_displayName;
-            const int colonIndex = m_displayName.indexOf(':');
+            const int colonIndex = m_displayName.indexOf(QLatin1Char(':'));
             if (colonIndex == -1) {
                 emitFailure(tr("Invalid display name \"%1\"").arg(m_displayName));
                 return;
             }
             displayInfo.hostName = m_displayName.mid(0, colonIndex);
-            const int dotIndex = m_displayName.indexOf('.', colonIndex + 1);
+            const int dotIndex = m_displayName.indexOf(QLatin1Char('.'), colonIndex + 1);
             const QString display = m_displayName.mid(colonIndex + 1,
                                                       dotIndex == -1 ? -1
                                                                      : dotIndex - colonIndex - 1);
@@ -137,8 +140,11 @@ void SshX11InfoRetriever::start()
         return;
     }
     m_state = State::RunningGenerate;
-    m_xauthProc->start("xauth", QStringList{"-f", m_xauthFile->fileName(), "generate",
-                                            m_displayName, QString::fromLatin1(xauthProtocol())});
+    m_xauthProc->start(QStringLiteral("xauth"), QStringList{
+                           QStringLiteral("-f"),
+                           m_xauthFile->fileName(),
+                           QStringLiteral("generate"),
+                           m_displayName, QString::fromLatin1(xauthProtocol())});
 }
 
 void SshX11InfoRetriever::emitFailure(const QString &reason)

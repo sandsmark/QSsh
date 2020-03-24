@@ -35,8 +35,8 @@ int main(int argc, char *argv[])
         showSyntax();
     }
 
-    QString orig = argv[1];
-    QString dest = argv[2];
+    QString orig = QString::fromLocal8Bit(argv[1]);
+    QString dest = QString::fromLocal8Bit(argv[2]);
     QString passwd = getPassword();
 
     upload(orig, dest, passwd);
@@ -67,10 +67,10 @@ void upload(const QString &orig, const QString &dest, const QString passwd)
 {
     // Parse destination with format "username@host:/destination"
 
-    QStringList l1 = dest.split("@");
+    QStringList l1 = dest.split(QLatin1Char('@'));
 
     if (l1.size() == 2) {
-        QStringList l2 = l1[1].split(":");
+        QStringList l2 = l1[1].split(QLatin1Char(':'));
 
         if (l2.size() == 2) {
             static SecureFileUploader uploader;

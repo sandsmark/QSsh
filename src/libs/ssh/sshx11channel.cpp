@@ -44,9 +44,9 @@ public:
 
     void establishConnection(const X11DisplayInfo &displayInfo)
     {
-        const bool hostNameIsPath = displayInfo.hostName.startsWith('/'); // macOS
+        const bool hostNameIsPath = displayInfo.hostName.startsWith(QLatin1Char('/')); // macOS
         const bool hasActualHostName = !displayInfo.hostName.isEmpty()
-                && displayInfo.hostName != "unix" && !displayInfo.hostName.endsWith("/unix")
+                && displayInfo.hostName != QLatin1String("unix") && !displayInfo.hostName.endsWith(QLatin1String("/unix"))
                 && !hostNameIsPath;
         if (hasActualHostName) {
             QTcpSocket * const socket = new QTcpSocket(this);
@@ -59,8 +59,8 @@ public:
             socket->connectToHost(displayInfo.hostName, 6000 + displayInfo.display);
             m_socket = socket;
         } else {
-            const QString serverBasePath = hostNameIsPath ? QString(displayInfo.hostName + ':')
-                                                          : "/tmp/.X11-unix/X";
+            const QString serverBasePath = hostNameIsPath ? QString(displayInfo.hostName + QLatin1Char(':'))
+                                                          : QLatin1String("/tmp/.X11-unix/X");
             QLocalSocket * const socket = new QLocalSocket(this);
             connect(socket, &QLocalSocket::connected, this, &X11Socket::connected);
             connect(socket,

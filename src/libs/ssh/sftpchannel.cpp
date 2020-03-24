@@ -948,8 +948,8 @@ void SftpChannelPrivate::handleDownloadDir(SftpListDir::Ptr op,
 
     foreach (SftpFileInfo fileInfo, fileInfoList) {
         Internal::SftpDownloadDir::Dir dir = op->parentJob->lsdirsInProgress[op];
-        QString fullPathRemote = QDir(dir.remoteDir).path() + "/" + fileInfo.name;
-        QString fullPathLocal = QDir(dir.localDir).path() + "/" + fileInfo.name;
+        QString fullPathRemote = QDir(dir.remoteDir).path() + QLatin1Char('/') + fileInfo.name;
+        QString fullPathLocal = QDir(dir.localDir).path() + QLatin1Char('/') + fileInfo.name;
 
         if (fileInfo.type == FileTypeRegular) {
             QSharedPointer<QFile> localFile(new QFile(fullPathLocal));
@@ -961,7 +961,7 @@ void SftpChannelPrivate::handleDownloadDir(SftpListDir::Ptr op,
             createJob(downloadJob);
 
         } else if (fileInfo.type == FileTypeDirectory) {
-            if (fileInfo.name == "." || fileInfo.name == "..") {
+            if (fileInfo.name == QLatin1String(".") || fileInfo.name == QLatin1String("..")) {
                 continue;
             }
 

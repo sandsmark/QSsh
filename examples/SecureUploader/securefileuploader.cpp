@@ -33,7 +33,7 @@ void SecureFileUploader::upload(const QString &localFile, const QString &dest, c
     QFileInfo info(localFile);
 
     m_localFilename = info.canonicalFilePath();
-    m_remoteFilename = dest + "/" + info.fileName();
+    m_remoteFilename = dest + QLatin1Char('/') + info.fileName();
 
     QSsh::SshConnectionParameters params;
     params.setHost(host);
@@ -102,7 +102,7 @@ void SecureFileUploader::onChannelError(const QString &err)
 
 void SecureFileUploader::onOpfinished(QSsh::SftpJobId job, const QString &err)
 {
-    qDebug() << "SecureUploader: Finished job #" << job << ":" << (err.isEmpty() ? "OK" : err);
+    qDebug() << "SecureUploader: Finished job #" << job << ":" << (err.isEmpty() ? QStringLiteral("OK") : err);
 }
 
 
