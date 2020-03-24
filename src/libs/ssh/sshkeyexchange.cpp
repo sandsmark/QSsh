@@ -111,22 +111,23 @@ bool SshKeyExchange::sendDhInitPacket(const SshIncomingPacket &serverKexInit)
     qCDebug(sshLog, "First packet follows: %d", kexInitParams.firstKexPacketFollows);
 
     m_kexAlgoName = SshCapabilities::findBestMatch(SshCapabilities::KeyExchangeMethods,
-                                                   kexInitParams.keyAlgorithms.names,"KeyExchange");
+                                                   kexInitParams.keyAlgorithms.names,
+                                                   "KeyExchange");
     m_serverHostKeyAlgo = SshCapabilities::findBestMatch(SshCapabilities::PublicKeyAlgorithms,
-            kexInitParams.serverHostKeyAlgorithms.names,"HostKey");
+            kexInitParams.serverHostKeyAlgorithms.names, "HostKey");
     determineHashingAlgorithm(kexInitParams, true);
     determineHashingAlgorithm(kexInitParams, false);
 
     m_encryptionAlgo
         = SshCapabilities::findBestMatch(SshCapabilities::EncryptionAlgorithms,
-              kexInitParams.encryptionAlgorithmsClientToServer.names,"Encryption");
+              kexInitParams.encryptionAlgorithmsClientToServer.names, "Encryption");
     m_decryptionAlgo
         = SshCapabilities::findBestMatch(SshCapabilities::EncryptionAlgorithms,
-              kexInitParams.encryptionAlgorithmsServerToClient.names,"Decryption");
+              kexInitParams.encryptionAlgorithmsServerToClient.names, "Decryption");
     SshCapabilities::findBestMatch(SshCapabilities::CompressionAlgorithms,
-        kexInitParams.compressionAlgorithmsClientToServer.names,"Compression Client to Server");
+        kexInitParams.compressionAlgorithmsClientToServer.names, "Compression Client to Server");
     SshCapabilities::findBestMatch(SshCapabilities::CompressionAlgorithms,
-        kexInitParams.compressionAlgorithmsServerToClient.names,"Compression Server to Client");
+        kexInitParams.compressionAlgorithmsServerToClient.names, "Compression Server to Client");
 
     AutoSeeded_RNG rng;
     if (m_kexAlgoName.startsWith(SshCapabilities::EcdhKexNamePrefix)) {
@@ -232,7 +233,7 @@ void SshKeyExchange::sendNewKeysPacket(const SshIncomingPacket &dhReply,
     checkHostKey(reply.k_s);
 
     m_sendFacility.sendNewKeysPacket();
-    m_hostFingerprint = QString::fromStdString(sigKey->fingerprint_public("SHA-256"));
+    m_hostFingerprint = QByteArray::fromStdString(sigKey->fingerprint_public("SHA-256"));
 
 }
 
@@ -254,7 +255,9 @@ void SshKeyExchange::determineHashingAlgorithm(const SshKeyExchangeInit &kexInit
     const QList<QByteArray> &serverCapabilities = serverToClient
             ? kexInit.macAlgorithmsServerToClient.names
             : kexInit.macAlgorithmsClientToServer.names;
-    *algo = SshCapabilities::findBestMatch(SshCapabilities::MacAlgorithms, serverCapabilities,"MacAlgorithms");
+    *algo = SshCapabilities::findBestMatch(SshCapabilities::MacAlgorithms,
+                                           serverCapabilities,
+                                           "MacAlgorithms");
 }
 
 void SshKeyExchange::checkHostKey(const QByteArray &hostKey)
@@ -291,11 +294,6 @@ void SshKeyExchange::throwHostKeyException()
     throw SshServerException(SSH_DISCONNECT_HOST_KEY_NOT_VERIFIABLE, "Host key changed",
                              SSH_TR("Host key of machine \"%1\" has changed.")
                              .arg(m_connParams.host()));
-}
-
-QString SshKeyExchange::hostKeyFingerprint()
-{
-  return m_hostFingerprint;
 }
 
 } // namespace Internal

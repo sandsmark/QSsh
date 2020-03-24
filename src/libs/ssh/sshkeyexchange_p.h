@@ -57,7 +57,7 @@ public:
     SshKeyExchange(const SshConnectionParameters &connParams, SshSendFacility &sendFacility);
     ~SshKeyExchange();
 
-    QString hostKeyFingerprint();
+    const QByteArray &hostKeyFingerprint() { return m_hostFingerprint; }
     void sendKexInitPacket(const QByteArray &serverId);
 
     // Returns true <=> the server sends a guessed package.
@@ -96,7 +96,7 @@ private:
     std::unique_ptr<Botan::HashFunction> m_hash;
     const SshConnectionParameters m_connParams;
     SshSendFacility &m_sendFacility;
-    QString m_hostFingerprint;
+    QByteArray m_hostFingerprint;
 };
 
 } // namespace Internal

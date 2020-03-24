@@ -121,7 +121,7 @@ void SshHostKeyDatabase::insertHostKey(const QString &hostName, const QByteArray
 
 QByteArray SshHostKeyDatabase::retrieveHostKey(const QString &hostName)
 {
-   return d->hostKeys.find(hostName).value();
+   return d->hostKeys.value(hostName);
 }
 
 } // namespace QSsh

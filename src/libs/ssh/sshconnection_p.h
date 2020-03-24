@@ -100,7 +100,7 @@ public:
     SshStateInternal state() const { return m_state; }
     SshError errorState() const { return m_error; }
     QString errorString() const { return m_errorString; }
-    QString hostKeyFingerprint();
+    const QByteArray &hostKeyFingerprint() const { return m_hostFingerprint; }
 
 signals:
     void connected();
@@ -183,7 +183,7 @@ private:
     SshError m_error;
     QString m_errorString;
     QScopedPointer<SshKeyExchange> m_keyExchange;
-    QString fingerprint;
+    QByteArray m_hostFingerprint;
     QTimer m_timeoutTimer;
     QTimer m_keepAliveTimer;
     bool m_ignoreNextPacket;

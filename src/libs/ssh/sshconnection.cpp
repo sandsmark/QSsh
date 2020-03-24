@@ -109,7 +109,7 @@ SshConnection::SshConnection(const SshConnectionParameters &serverInfo, QObject 
             &SshConnection::error, Qt::QueuedConnection);
 }
 
-QString SshConnection::hostKeyFingerprint()
+const QByteArray &SshConnection::hostKeyFingerprint() const
 {
     return d->hostKeyFingerprint();
 }
@@ -243,11 +243,6 @@ SshConnectionPrivate::SshConnectionPrivate(SshConnection *conn,
 SshConnectionPrivate::~SshConnectionPrivate()
 {
     disconnect();
-}
-
-QString SshConnectionPrivate::hostKeyFingerprint()
-{
-    return fingerprint;
 }
 
 void SshConnectionPrivate::setupPacketHandlers()
@@ -513,7 +508,7 @@ void SshConnectionPrivate::handleKeyExchangeReplyPacket()
 
     m_keyExchange->sendNewKeysPacket(m_incomingPacket,
         ClientId.left(ClientId.size() - 2));
-    fingerprint = m_keyExchange->hostKeyFingerprint();
+    m_hostFingerprint = m_keyExchange->hostKeyFingerprint();
     m_sendFacility.recreateKeys(*m_keyExchange);
     m_keyExchangeState = NewKeysSent;
 }
@@ -541,7 +536,7 @@ void SshConnectionPrivate::handleServiceAcceptPacket()
     switch (m_connParams.authenticationType) {
     case SshConnectionParameters::AuthenticationTypeTryAllPasswordBasedMethods:
         m_triedAllPasswordBasedMethods = false;
-        [[clang::fallthrough]];
+        Q_FALLTHROUGH();
     case SshConnectionParameters::AuthenticationTypePassword:
         m_sendFacility.sendUserAuthByPasswordRequestPacket(m_connParams.userName().toUtf8(),
                 SshCapabilities::SshConnectionService, m_connParams.password().toUtf8());
