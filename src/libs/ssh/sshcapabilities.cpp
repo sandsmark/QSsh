@@ -108,7 +108,7 @@ const QList<QByteArray> SshCapabilities::CompressionAlgorithms
 const QByteArray SshCapabilities::SshConnectionService("ssh-connection");
 
 QList<QByteArray> SshCapabilities::commonCapabilities(const QList<QByteArray> &myCapabilities,
-                                               const QList<QByteArray> &serverCapabilities, const QString &group)
+                                               const QList<QByteArray> &serverCapabilities, const QByteArray &group)
 {
     QList<QByteArray> capabilities;
     foreach (const QByteArray &myCapability, myCapabilities) {
@@ -125,14 +125,14 @@ QList<QByteArray> SshCapabilities::commonCapabilities(const QList<QByteArray> &m
             "Server and client %1 capabilities don't match.\n"
             "Client list: %2\n"
             "Server list: %3")
-            .arg(group)
+            .arg(QString::fromLatin1(group))
             .arg(QString::fromLocal8Bit(listAsByteArray(myCapabilities).data()))
             .arg(QString::fromLocal8Bit(listAsByteArray(serverCapabilities).data())));
 
 }
 
 QByteArray SshCapabilities::findBestMatch(const QList<QByteArray> &myCapabilities,
-    const QList<QByteArray> &serverCapabilities, const QString &group)
+    const QList<QByteArray> &serverCapabilities, const QByteArray &group)
 {
     return commonCapabilities(myCapabilities, serverCapabilities, group).first();
 }
