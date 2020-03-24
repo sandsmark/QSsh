@@ -52,6 +52,10 @@ macx {
     IDE_BIN_PATH     = $$IDE_APP_PATH
 }
 
+clang {
+    QMAKE_CXXFLAGS += -Wno-gnu-zero-variadic-macro-arguments
+}
+
 QT += widgets
 
 CONFIG += warn_on
