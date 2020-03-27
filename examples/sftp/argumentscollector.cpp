@@ -56,6 +56,7 @@ Parameters ArgumentsCollector::collect(bool &success) const
         int port;
         QString host;
         QString user;
+        QString path;
         for (pos = 1; pos < m_arguments.count() - 1; ++pos) {
             if (checkAndSetStringArg(pos, host, "-h") || checkAndSetStringArg(pos, user, "-u")) {
                 parameters.sshParams.setHost(host);
@@ -75,6 +76,9 @@ Parameters ArgumentsCollector::collect(bool &success) const
                 parameters.sshParams.authenticationType
                     = SshConnectionParameters::AuthenticationTypeTryAllPasswordBasedMethods;
                 authTypeGiven = true;
+                continue;
+            }
+            if (checkAndSetStringArg(pos, parameters.remotePath, "-d")) {
                 continue;
             }
             if (checkAndSetStringArg(pos, parameters.sshParams.privateKeyFile, "-k")) {
@@ -106,9 +110,14 @@ Parameters ArgumentsCollector::collect(bool &success) const
         if (!timeoutGiven)
             parameters.sshParams.timeout = 30;
         if (!smallFileCountGiven)
-            parameters.smallFileCount = 1000;
+            parameters.smallFileCount = 10;//00;
         if (!bigFileSizeGiven)
             parameters.bigFileSize = 1024;
+        if (parameters.remotePath.isEmpty()) {
+            parameters.remotePath = "/tmp/";
+        } else if (!parameters.remotePath.endsWith('/')) {
+            parameters.remotePath += '/';
+        }
         success = true;
     } catch (ArgumentErrorException &ex) {
         cerr << "Error: " << qPrintable(ex.error) << endl;
@@ -124,6 +133,7 @@ void ArgumentsCollector::printUsage() const
         << " -h <host> -u <user> "
         << "-pwd <password> | -k <private key file> [ -p <port> ] "
         << "[ -t <timeout> ] [ -c <small file count> ] "
+        << "[ -d <remote dir> ] "
         << "[ -s <big file size in MB> ] [ -no-proxy ]" << endl;
 }
 

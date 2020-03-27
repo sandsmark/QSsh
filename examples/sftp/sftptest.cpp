@@ -396,7 +396,7 @@ void SftpTest::handleSftpJobFinished(SftpJobId job, const SftpError errorType, c
             return;
         std::cout << "Big files successfully removed. "
             << "Now creating remote directory..." << std::endl;
-        m_remoteDirPath = QLatin1String("/tmp/sftptest-") + QDateTime::currentDateTime().toString();
+        m_remoteDirPath = m_parameters.remotePath + QLatin1String("sftptest-") + QDateTime::currentDateTime().toString();
         m_mkdirJob = m_channel->createDirectory(m_remoteDirPath);
         m_state = CreatingDir;
         break;
@@ -525,7 +525,7 @@ QString SftpTest::cmpFileName(const QString &fileName) const
 
 QString SftpTest::remoteFilePath(const QString &localFileName) const
 {
-    return QLatin1String("/tmp/") + localFileName + QLatin1String(".upload");
+    return m_parameters.remotePath + localFileName + QLatin1String(".upload");
 }
 
 void SftpTest::earlyDisconnectFromHost()
