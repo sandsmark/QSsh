@@ -226,6 +226,11 @@ SshConnectionPrivate::SshConnectionPrivate(SshConnection *conn,
       m_conn(conn)
 {
     setupPacketHandlers();
+
+    if (m_connParams.options & SshLowDelaySocket) {
+        m_socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+    }
+
     m_socket->setProxy((m_connParams.options & SshIgnoreDefaultProxy)
             ? QNetworkProxy::NoProxy : QNetworkProxy::DefaultProxy);
     m_timeoutTimer.setSingleShot(true);

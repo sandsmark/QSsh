@@ -63,7 +63,10 @@ enum SshConnectionOption {
     SshIgnoreDefaultProxy = 0x1,
 
     /// Fail instead of warn if the remote host violates the standard
-    SshEnableStrictConformanceChecks = 0x2
+    SshEnableStrictConformanceChecks = 0x2,
+
+    /// Set the QAbstractSocket::LowDelayOption, which is the same as TCP_NODELAY
+    SshLowDelaySocket = 0x4
 };
 
 Q_DECLARE_FLAGS(SshConnectionOptions, SshConnectionOption)
