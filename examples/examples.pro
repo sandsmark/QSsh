@@ -2,5 +2,9 @@ TEMPLATE  = subdirs
 CONFIG   += ordered
 
 SUBDIRS = \
-    SecureUploader
+    SecureUploader \
+    errorhandling \
+    remoteprocess \
+    sftp \
+    tunnel
 
