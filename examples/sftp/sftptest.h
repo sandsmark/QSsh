@@ -58,7 +58,7 @@ private slots:
     void handleDisconnected();
     void handleChannelInitialized();
     void handleChannelInitializationFailure(const QString &reason);
-    void handleJobFinished(QSsh::SftpJobId job, const QString &error);
+    void handleSftpJobFinished(QSsh::SftpJobId job, const QSsh::SftpError errorType, const QString &error);
     void handleFileInfo(QSsh::SftpJobId job, const QList<QSsh::SftpFileInfo> &fileInfoList);
     void handleChannelClosed();
 

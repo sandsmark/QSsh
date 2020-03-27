@@ -61,9 +61,9 @@ SftpTest::~SftpTest()
 void SftpTest::run()
 {
     m_connection = new SshConnection(m_parameters.sshParams);
-    connect(m_connection, SIGNAL(connected()), SLOT(handleConnected()));
-    connect(m_connection, SIGNAL(error(QSsh::SshError)), SLOT(handleError()));
-    connect(m_connection, SIGNAL(disconnected()), SLOT(handleDisconnected()));
+    connect(m_connection, &SshConnection::connected, this, &SftpTest::handleConnected);
+    connect(m_connection, &SshConnection::error, this, &SftpTest::handleError);
+    connect(m_connection, &SshConnection::disconnected, this, &SftpTest::handleDisconnected);
     std::cout << "Connecting to host '"
         << qPrintable(m_parameters.sshParams.host()) << "'..." << std::endl;
     m_state = Connecting;
@@ -79,17 +79,17 @@ void SftpTest::handleConnected()
     } else {
         std::cout << "Connected. Initializing SFTP channel..." << std::endl;
         m_channel = m_connection->createSftpChannel();
-        connect(m_channel.data(), SIGNAL(initialized()), this,
-           SLOT(handleChannelInitialized()));
-        connect(m_channel.data(), SIGNAL(channelError(QString)), this,
-            SLOT(handleChannelInitializationFailure(QString)));
-        connect(m_channel.data(), SIGNAL(finished(QSsh::SftpJobId,QString)),
-            this, SLOT(handleJobFinished(QSsh::SftpJobId,QString)));
+        connect(m_channel.data(), &SftpChannel::initialized, this,
+           &SftpTest::handleChannelInitialized);
+        connect(m_channel.data(), &SftpChannel::channelError, this,
+            &SftpTest::handleChannelInitializationFailure);
+        connect(m_channel.data(), &SftpChannel::finished,
+            this, &SftpTest::handleSftpJobFinished);
         connect(m_channel.data(),
-            SIGNAL(fileInfoAvailable(QSsh::SftpJobId,QList<QSsh::SftpFileInfo>)),
-            SLOT(handleFileInfo(QSsh::SftpJobId,QList<QSsh::SftpFileInfo>)));
-        connect(m_channel.data(), SIGNAL(closed()), this,
-            SLOT(handleChannelClosed()));
+            &SftpChannel::fileInfoAvailable,
+            this, &SftpTest::handleFileInfo);
+        connect(m_channel.data(), &SftpChannel::closed, this,
+            &SftpTest::handleChannelClosed);
         m_state = InitializingChannel;
         m_channel->initialize();
     }
@@ -196,8 +196,10 @@ void SftpTest::handleChannelClosed()
     m_connection->disconnectFromHost();
 }
 
-void SftpTest::handleJobFinished(SftpJobId job, const QString &error)
+void SftpTest::handleSftpJobFinished(SftpJobId job, const SftpError errorType, const QString &error)
 {
+    Q_UNUSED(errorType);
+
     switch (m_state) {
     case UploadingSmall:
         if (!handleJobFinished(job, m_smallFilesUploadJobs, error, "uploading"))
