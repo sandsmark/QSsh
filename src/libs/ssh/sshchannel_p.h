@@ -61,7 +61,7 @@ public:
     void handleOpenSuccess(quint32 remoteChannelId, quint32 remoteWindowSize,
         quint32 remoteMaxPacketSize);
     void handleOpenFailure(const QString &reason);
-    void handleWindowAdjust(quint32 bytesToAdd);
+    void handleWindowAdjust(quint64 bytesToAdd);
     void handleChannelEof();
     void handleChannelClose();
     void handleChannelData(const QByteArray &data);

@@ -103,7 +103,7 @@ quint32 AbstractSshChannel::maxPacketSize()
     return 16 * 1024 * 1024;
 }
 
-void AbstractSshChannel::handleWindowAdjust(quint32 bytesToAdd)
+void AbstractSshChannel::handleWindowAdjust(quint64 bytesToAdd)
 {
     checkChannelActive();
 
