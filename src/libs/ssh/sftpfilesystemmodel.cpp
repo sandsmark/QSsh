@@ -165,6 +165,10 @@ int SftpFileSystemModel::columnCount(const QModelIndex &parent) const
 
 QVariant SftpFileSystemModel::data(const QModelIndex &index, int role) const
 {
+    if (!index.internalPointer()) {
+        return QVariant();
+    }
+
     const SftpFileNode * const node = indexToFileNode(index);
     if (index.column() == 0 && role == Qt::DecorationRole) {
         switch (node->fileInfo.type) {
@@ -241,7 +245,7 @@ QModelIndex SftpFileSystemModel::parent(const QModelIndex &child) const
 int SftpFileSystemModel::rowCount(const QModelIndex &parent) const
 {
     if (!d->rootNode)
-        return 0;
+        return 1; // fake it until we make it, otherwise QTreeView isn't happy
     if (!parent.isValid())
         return 1;
     if (parent.column() != 0)
@@ -340,9 +344,13 @@ void SftpFileSystemModel::handleFileInfo(SftpJobId jobId, const QList<SftpFileIn
     if (filteredList.isEmpty())
         return;
 
-    // In theory beginInsertRows() should suffice, but that fails to have an effect
-    // if rowCount() returned 0 earlier.
-    emit layoutAboutToBeChanged();
+    if (parentNode->parent) {
+        QModelIndex parentIndex = createIndex(parentNode->parent->children.indexOf(parentNode), 0, parentNode);
+        beginInsertRows(parentIndex, rowCount(parentIndex), rowCount(parentIndex) + filteredList.count());
+    } else {
+        // root node
+        beginInsertRows(QModelIndex(), 0, 1);
+    }
 
     foreach (const SftpFileInfo &fileInfo, filteredList) {
         SftpFileNode *childNode;
@@ -358,7 +366,7 @@ void SftpFileSystemModel::handleFileInfo(SftpJobId jobId, const QList<SftpFileIn
         childNode->parent = parentNode;
         parentNode->children << childNode;
     }
-    emit layoutChanged(); // Should be endInsertRows(), see above.
+    endInsertRows();
 }
 
 void SftpFileSystemModel::handleSftpJobFinished(SftpJobId jobId, const SftpError error, const QString &errorMessage)
