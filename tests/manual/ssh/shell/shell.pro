@@ -1,4 +1,4 @@
-include(../ssh.pri)
+include(../qssh.pri)
 QT += network
 
 TARGET=shell
