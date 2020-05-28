@@ -1,7 +1,7 @@
 QT       = core network
 
 include (../../../qssh.pri)
-include (../../../src/libs/ssh/ssh.pri)
+include (../../../src/libs/qssh/qssh.pri)
 
 macx:QMAKE_LFLAGS += -Wl,-rpath,\"$$IDE_BIN_PATH/..\"
 INCLUDEPATH *= $$IDE_SOURCE_TREE/src/plugins
