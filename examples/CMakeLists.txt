@@ -1,0 +1,5 @@
+add_subdirectory(SecureUploader)
+add_subdirectory(remoteprocess)
+add_subdirectory(sftp)
+add_subdirectory(tunnel)
+add_subdirectory(errorhandling)

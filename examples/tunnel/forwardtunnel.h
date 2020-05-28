@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "ssh/ssherrors.h"
+#include "ssherrors.h"
 
 #include <QObject>
 #include <QSharedPointer>

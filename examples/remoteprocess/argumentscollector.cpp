@@ -58,9 +58,12 @@ SshConnectionParameters ArgumentsCollector::collect(bool &success) const
         for (pos = 1; pos < m_arguments.count() - 1; ++pos) {
             QString host;
             QString user;
-            if (checkAndSetStringArg(pos, host, "-h") || checkAndSetStringArg(pos, user, "-u")) {
-                parameters.setHost(host);
+            if (checkAndSetStringArg(pos, user, "-u")) {
                 parameters.setUserName(user);
+                continue;
+            }
+            if (checkAndSetStringArg(pos, host, "-h") ) {
+                parameters.setHost(host);
                 continue;
             }
             if (checkAndSetIntArg(pos, port, portGiven, "-p")
