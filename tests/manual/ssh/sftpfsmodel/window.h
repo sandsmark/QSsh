@@ -23,7 +23,7 @@
 **
 ****************************************************************************/
 
-#include <ssh/sftpdefs.h>
+#include <qssh/sftpdefs.h>
 
 #include <QDialog>
 

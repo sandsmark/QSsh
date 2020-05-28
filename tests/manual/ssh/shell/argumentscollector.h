@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <ssh/sshconnection.h>
+#include <qssh/sshconnection.h>
 
 #include <QStringList>
 

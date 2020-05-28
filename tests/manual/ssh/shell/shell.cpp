@@ -25,8 +25,8 @@
 
 #include "shell.h"
 
-#include <ssh/sshconnection.h>
-#include <ssh/sshremoteprocess.h>
+#include <qssh/sshconnection.h>
+#include <qssh/sshremoteprocess.h>
 
 #include <QCoreApplication>
 #include <QFile>
