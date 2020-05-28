@@ -26,8 +26,8 @@
 #include "window.h"
 #include "ui_window.h"
 
-#include <ssh/sftpfilesystemmodel.h>
-#include <ssh/sshconnection.h>
+#include <qssh/sftpfilesystemmodel.h>
+#include <qssh/sshconnection.h>
 
 #include <QApplication>
 #include <QDir>

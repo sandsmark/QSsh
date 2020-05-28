@@ -26,7 +26,7 @@
 #include "argumentscollector.h"
 #include "shell.h"
 
-#include <ssh/sshconnection.h>
+#include <qssh/sshconnection.h>
 
 #include <QCoreApplication>
 #include <QObject>
