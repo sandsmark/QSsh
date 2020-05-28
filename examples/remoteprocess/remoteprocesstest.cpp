@@ -30,7 +30,7 @@
 
 #include "remoteprocesstest.h"
 
-#include <sshpseudoterminal.h>
+#include <qssh/sshpseudoterminal.h>
 
 #include <QCoreApplication>
 #include <QTextStream>

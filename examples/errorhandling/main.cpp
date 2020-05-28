@@ -28,9 +28,9 @@
 **
 **************************************************************************/
 
-#include <sftpchannel.h>
-#include <sshconnection.h>
-#include <sshremoteprocess.h>
+#include <qssh/sftpchannel.h>
+#include <qssh/sshconnection.h>
+#include <qssh/sshremoteprocess.h>
 
 #include <QCoreApplication>
 #include <QList>

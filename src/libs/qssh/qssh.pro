@@ -111,7 +111,7 @@ HEADERS = $$PUBLIC_HEADERS \
     $$PWD/sshx11inforetriever_p.h \
     $$PWD/opensshkeyfilereader_p.h \
 
-RESOURCES += $$PWD/ssh.qrc
+RESOURCES += $$PWD/qssh.qrc
 
 
 headers.files = $$PUBLIC_HEADERS

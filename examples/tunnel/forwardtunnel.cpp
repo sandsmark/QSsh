@@ -25,8 +25,8 @@
 
 #include "forwardtunnel.h"
 
-#include <sshconnection.h>
-#include <sshtcpipforwardserver.h>
+#include <qssh/sshconnection.h>
+#include <qssh/sshtcpipforwardserver.h>
 
 #include <QCoreApplication>
 #include <QTcpServer>

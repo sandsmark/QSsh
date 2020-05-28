@@ -22,8 +22,8 @@
 
 #include <QObject>
 
-#include "sftpchannel.h"
-#include "sshconnection.h"
+#include "qssh/sftpchannel.h"
+#include "qssh/sshconnection.h"
 
 /// Very simple example to upload a file using FTPS
 class SecureFileUploader : public QObject

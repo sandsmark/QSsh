@@ -23,15 +23,15 @@
 **
 ****************************************************************************/
 
-#include <ssh/sftpchannel.h>
-#include <ssh/sshconnection.h>
-#include <ssh/sshdirecttcpiptunnel.h>
-#include <ssh/sshforwardedtcpiptunnel.h>
-#include <ssh/sshpseudoterminal.h>
-#include <ssh/sshremoteprocessrunner.h>
-#include <ssh/sshtcpipforwardserver.h>
-#include <ssh/sshx11displayinfo_p.h>
-#include <ssh/sshx11inforetriever_p.h>
+#include <qssh/sftpchannel.h>
+#include <qssh/sshconnection.h>
+#include <qssh/sshdirecttcpiptunnel.h>
+#include <qssh/sshforwardedtcpiptunnel.h>
+#include <qssh/sshpseudoterminal.h>
+#include <qssh/sshremoteprocessrunner.h>
+#include <qssh/sshtcpipforwardserver.h>
+#include <qssh/sshx11displayinfo_p.h>
+#include <qssh/sshx11inforetriever_p.h>
 
 #include <QDateTime>
 #include <QDir>
@@ -839,12 +839,12 @@ static QStringList appendExeExtensions(const QString &executable)
 #ifdef Q_OS_WIN
     // Check all the executable extensions on windows:
     // PATHEXT is only used if the executable has no extension
-    if (fi.suffix().isEmpty()) {
-        const QStringList extensions = value("PATHEXT").split(';');
+//    if (fi.suffix().isEmpty()) {
+//        const QStringList extensions = value("PATHEXT").split(';');
 
-        for (const QString &ext : extensions)
-            execs << executable + ext.toLower();
-    }
+//        for (const QString &ext : extensions)
+//            execs << executable + ext.toLower();
+//    }
 #endif
 
     return execs;
@@ -863,12 +863,13 @@ static QString expandVariables(const QString &input)
 
 #ifdef Q_OS_WIN
     for (int vStart = -1, i = 0; i < result.length(); ) {
-        if (result.at(i++) == '%') {
+        QChar c = result.at(i++);
+        if (c == QLatin1Char('%')) {
             if (vStart > 0) {
                 const QByteArray varName = result.mid(vStart, i - vStart - 1).toLocal8Bit();
                 if (qEnvironmentVariableIsSet(varName.constData())) {
                     const QByteArray varValue = qgetenv(varName.constData());
-                    result.replace(vStart - 1, i - vStart + 1, varValue);
+                    result.replace(vStart - 1, i - vStart + 1, QString::fromStdString(varValue.toStdString()));
                     i = vStart - 1 + varValue.length();
                     vStart = -1;
                 } else {
