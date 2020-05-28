@@ -31,8 +31,8 @@
 **************************************************************************/
 #include "directtunnel.h"
 
-#include <sshconnection.h>
-#include <sshdirecttcpiptunnel.h>
+#include <qssh/sshconnection.h>
+#include <qssh/sshdirecttcpiptunnel.h>
 
 #include <QCoreApplication>
 #include <QTcpServer>

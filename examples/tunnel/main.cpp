@@ -33,7 +33,7 @@
 #include "directtunnel.h"
 #include "forwardtunnel.h"
 
-#include <sshconnection.h>
+#include <qssh/sshconnection.h>
 
 #include <QCoreApplication>
 #include <QObject>

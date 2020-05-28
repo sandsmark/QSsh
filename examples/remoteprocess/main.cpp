@@ -31,7 +31,7 @@
 #include "argumentscollector.h"
 #include "remoteprocesstest.h"
 
-#include <sshconnection.h>
+#include <qssh/sshconnection.h>
 
 #include <QCoreApplication>
 #include <QObject>
