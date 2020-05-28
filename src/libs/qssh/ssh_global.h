@@ -33,10 +33,17 @@
 
 #include <QtGlobal>
 
+#ifdef _MSC_VER
+// For static cmake building removing dll export/import
+#  define QSSH_EXPORT
+#else
+
 #if defined(QTCSSH_LIBRARY)
 #  define QSSH_EXPORT Q_DECL_EXPORT
 #else
 #  define QSSH_EXPORT Q_DECL_IMPORT
+#endif
+
 #endif
 
 #define QSSH_PRINT_WARNING qWarning("Soft assert at %s:%d", __FILE__, __LINE__)
