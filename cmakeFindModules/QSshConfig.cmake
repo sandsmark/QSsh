@@ -61,7 +61,7 @@ include(${CURRENT_CONFIG_INSTALL_DIR}/QSshTargets.cmake)
 message(STATUS "----")
 message(STATUS "QSSH Find_Package")
 message(STATUS "----")
-message(STATUS "Found QSSH )
+message(STATUS "Found QSSH ")
 message(STATUS "Installed in: ${CURRENT_ROOT_INSTALL_DIR}")
 message(STATUS "----")
 
