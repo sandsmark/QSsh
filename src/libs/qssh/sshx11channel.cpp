@@ -51,9 +51,7 @@ public:
         if (hasActualHostName) {
             QTcpSocket * const socket = new QTcpSocket(this);
             connect(socket, &QTcpSocket::connected, this, &X11Socket::connected);
-            connect(socket,
-                    static_cast<void(QTcpSocket::*)(QTcpSocket::SocketError)>(&QTcpSocket::error),
-                    [this, socket] {
+            connect(socket, &QTcpSocket::errorOccurred, this, [this, socket] {
                 emit error(socket->errorString());
             });
             socket->connectToHost(displayInfo.hostName, 6000 + displayInfo.display);
@@ -63,9 +61,7 @@ public:
                                                           : QLatin1String("/tmp/.X11-unix/X");
             QLocalSocket * const socket = new QLocalSocket(this);
             connect(socket, &QLocalSocket::connected, this, &X11Socket::connected);
-            connect(socket,
-                    static_cast<void(QLocalSocket::*)(QLocalSocket::LocalSocketError)>(&QLocalSocket::error),
-                    [this, socket] {
+            connect(socket, &QLocalSocket::errorOccurred, this, [this, socket] {
                 emit error(socket->errorString());
             });
             socket->connectToServer(serverBasePath + QString::number(displayInfo.display));

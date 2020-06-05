@@ -1092,7 +1092,7 @@ void SftpChannelPrivate::attributesToFileInfo(const SftpFileAttributes &attribut
         else
             fileInfo.type = FileTypeOther;
         fileInfo.permissionsValid = true;
-        fileInfo.permissions = 0;
+        fileInfo.permissions = {};
 
         if (attributes.timesPresent) {
             fileInfo.atime = attributes.atime;

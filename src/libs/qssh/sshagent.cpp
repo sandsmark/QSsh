@@ -138,9 +138,7 @@ SshAgent::SshAgent()
 {
     connect(&m_agentSocket, &QLocalSocket::connected, this, &SshAgent::handleConnected);
     connect(&m_agentSocket, &QLocalSocket::disconnected, this, &SshAgent::handleDisconnected);
-    connect(&m_agentSocket,
-            static_cast<void(QLocalSocket::*)(QLocalSocket::LocalSocketError)>(&QLocalSocket::error),
-            this, &SshAgent::handleSocketError);
+    connect(&m_agentSocket, &QLocalSocket::errorOccurred, this, &SshAgent::handleSocketError);
     connect(&m_agentSocket, &QLocalSocket::readyRead, this, &SshAgent::handleIncomingData);
     QTimer::singleShot(0, this, &SshAgent::connectToServer);
 }
