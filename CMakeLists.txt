@@ -8,10 +8,22 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 if(MSVC)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4005")
-set(BOTAN_LIB ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/botan.lib)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4005")
+    set(BOTAN_LIB ${_VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/lib/botan.lib)
 else(MSVC)
-set(BOTAN_LIB "-lbotan")
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(Botan REQUIRED IMPORTED_TARGET GLOBAL botan-2)
+
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(Botan
+        FOUND_VAR
+        Botan_FOUND
+        REQUIRED_VARS
+        Botan_INCLUDEDIR
+        Botan_LIBRARIES)
+
+    # Required for finding the includes
+    set(BOTAN_LIB CACHE STRING PkgConfig::Botan
 endif(MSVC)
 
 find_package(Qt5 COMPONENTS Core Widgets Network  REQUIRED)

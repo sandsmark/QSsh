@@ -37,6 +37,8 @@
 #include <botan/ecdsa.h>
 #include <botan/rsa.h>
 
+#include <memory>
+
 namespace QSsh {
 namespace Internal {
 
