@@ -34,6 +34,7 @@ add_library(QSsh
     opensshkeyfilereader.cpp
     qssh.qrc)
 
+get_property(BOTAN_LIB GLOBAL PROPERTY BOTAN_LIB)
 target_link_libraries( QSsh Qt5::Core Qt5::Network Qt5::Widgets ${BOTAN_LIB})
 
 # state that anybody linking to us needs to include the current source dir
@@ -45,4 +46,11 @@ target_include_directories(QSsh
           $<INSTALL_INTERFACE:include/qssh>
           )
 		  
+#INSTALL RULES
+install(
+  DIRECTORY .
+  DESTINATION include
+  COMPONENT headers
+  FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h"
+)
 install(TARGETS QSsh DESTINATION lib EXPORT QSsh-targets)

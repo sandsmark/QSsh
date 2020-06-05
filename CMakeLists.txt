@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.14)
 
 # set the project name and version
-project(QSsh VERSION 1.0)
+project(QSsh VERSION 1.0 LANGUAGES CXX)
 
 # specify the C++ standard
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 if(MSVC)
@@ -14,16 +14,7 @@ else(MSVC)
     find_package(PkgConfig REQUIRED)
     pkg_search_module(Botan REQUIRED IMPORTED_TARGET GLOBAL botan-2)
 
-    include(FindPackageHandleStandardArgs)
-    find_package_handle_standard_args(Botan
-        FOUND_VAR
-        Botan_FOUND
-        REQUIRED_VARS
-        Botan_INCLUDEDIR
-        Botan_LIBRARIES)
-
-    # Required for finding the includes
-    set(BOTAN_LIB CACHE STRING PkgConfig::Botan
+    set_property(GLOBAL PROPERTY BOTAN_LIB PkgConfig::Botan)
 endif(MSVC)
 
 find_package(Qt5 COMPONENTS Core Widgets Network  REQUIRED)
