@@ -49,6 +49,7 @@ SshTcpIpForwardServer::SshTcpIpForwardServer(const QString &bindAddress, quint16
                                              SshSendFacility &sendFacility)
     : d(new SshTcpIpForwardServerPrivate(bindAddress, bindPort, sendFacility))
 {
+    d->m_timeoutTimer.setTimerType(Qt::VeryCoarseTimer);
     connect(&d->m_timeoutTimer, &QTimer::timeout, this, &SshTcpIpForwardServer::setClosed);
 }
 

@@ -108,6 +108,7 @@ void SshDirectTcpIpTunnel::initialize()
             d->maxPacketSize(), d->m_remoteHost.toUtf8(), d->m_remotePort,
             d->m_originatingHost.toUtf8(), d->m_originatingPort);
         d->setChannelState(AbstractSshChannel::SessionRequested);
+        d->m_timeoutTimer.setTimerType(Qt::VeryCoarseTimer);
         d->m_timeoutTimer.start(d->ReplyTimeout);
     }  catch (const std::exception &e) { // Won't happen, but let's play it safe.
         qCWarning(sshLog, "Botan error: %s", e.what());

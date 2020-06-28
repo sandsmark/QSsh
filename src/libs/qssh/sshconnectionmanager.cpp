@@ -66,6 +66,7 @@ public:
         moveToThread(QCoreApplication::instance()->thread());
         connect(&m_removalTimer, &QTimer::timeout,
                 this, &SshConnectionManager::removeInactiveConnections);
+        m_removalTimer.setTimerType(Qt::VeryCoarseTimer);
         m_removalTimer.start(150000); // For a total timeout of five minutes.
     }
 

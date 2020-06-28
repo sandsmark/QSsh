@@ -50,6 +50,7 @@ AbstractSshChannel::AbstractSshChannel(quint32 channelId,
       m_localWindowSize(initialWindowSize()), m_remoteWindowSize(0),
       m_state(Inactive)
 {
+    m_timeoutTimer.setTimerType(Qt::VeryCoarseTimer);
     m_timeoutTimer.setSingleShot(true);
     connect(&m_timeoutTimer, &QTimer::timeout, this, &AbstractSshChannel::timeout);
 }

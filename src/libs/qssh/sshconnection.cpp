@@ -233,8 +233,10 @@ SshConnectionPrivate::SshConnectionPrivate(SshConnection *conn,
 
     m_socket->setProxy((m_connParams.options & SshIgnoreDefaultProxy)
             ? QNetworkProxy::NoProxy : QNetworkProxy::DefaultProxy);
+    m_timeoutTimer.setTimerType(Qt::VeryCoarseTimer);
     m_timeoutTimer.setSingleShot(true);
     m_timeoutTimer.setInterval(m_connParams.timeout * 1000);
+    m_keepAliveTimer.setTimerType(Qt::VeryCoarseTimer);
     m_keepAliveTimer.setSingleShot(true);
     m_keepAliveTimer.setInterval(10000);
     connect(m_channelManager, &SshChannelManager::timeout,
