@@ -36,12 +36,16 @@
 #include <QFile>
 #include <QFileInfo>
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+#include <QRandomGenerator>
+#endif
+
 #include <iostream>
 
 using namespace QSsh;
 
 SftpTest::SftpTest(const Parameters &params)
-    : m_parameters(params), m_state(Inactive), m_error(false), m_connection(0),
+    : m_parameters(params), m_state(Inactive), m_error(false), m_connection(nullptr),
       m_bigFileUploadJob(SftpInvalidJob),
       m_bigFileDownloadJob(SftpInvalidJob),
       m_bigFileRemovalJob(SftpInvalidJob),
@@ -133,7 +137,9 @@ void SftpTest::handleChannelInitialized()
 
     std::cout << "Creating " << m_parameters.smallFileCount
         << " files of 1 KB each ..." << std::endl;
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     qsrand(QDateTime::currentDateTime().toTime_t());
+#endif
     for (int i = 0; i < m_parameters.smallFileCount; ++i) {
         const QString fileName
             = QLatin1String("sftptestfile") + QString::number(i + 1);
@@ -145,7 +151,11 @@ void SftpTest::handleChannelInitialized()
         if (success) {
             int content[1024/sizeof(int)];
             for (size_t j = 0; j < sizeof content / sizeof content[0]; ++j)
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+                content[j] = QRandomGenerator::system()->generate();
+#else
                 content[j] = qrand();
+#endif
             file->write(reinterpret_cast<char *>(content), sizeof content);
             file->close();
         }
@@ -291,8 +301,13 @@ void SftpTest::handleSftpJobFinished(SftpJobId job, const SftpError errorType, c
                 = static_cast<quint64>(m_parameters.bigFileSize)*1024*1024/blockSize;
             for (quint64 block = 0; block < blockCount; ++block) {
                 int content[blockSize/sizeof(int)];
-                for (size_t j = 0; j < sizeof content / sizeof content[0]; ++j)
+                for (size_t j = 0; j < sizeof content / sizeof content[0]; ++j) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+                    content[j] = QRandomGenerator::system()->generate();
+#else
                     content[j] = qrand();
+#endif
+                }
                 m_localBigFile->write(reinterpret_cast<char *>(content),
                     sizeof content);
             }
@@ -532,8 +547,9 @@ void SftpTest::earlyDisconnectFromHost()
 {
     m_error = true;
     removeFiles(true);
-    if (m_channel)
-        disconnect(m_channel.data(), 0, this, 0);
+    if (m_channel) {
+        disconnect(m_channel.data(), nullptr, this, nullptr);
+    }
     m_state = Disconnecting;
     m_connection->disconnectFromHost();
 }
