@@ -105,6 +105,8 @@ public:
         const QByteArray &reasonString);
     quint32 nextClientSeqNr() const { return m_clientSeqNr; }
 
+    bool encrypterIsValid() const { return m_encrypter.isValid(); }
+
 private:
     void sendPacket();
 

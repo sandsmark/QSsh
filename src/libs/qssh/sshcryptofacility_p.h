@@ -60,6 +60,8 @@ public:
     quint32 macLength() const { return m_macLength; }
     QByteArray sessionId() const { return m_sessionId; }
 
+    bool isValid() const { return m_hMac && m_pipe; } // TODO: probably more, but this stops segfaulting
+
 protected:
     enum Mode { CbcMode, CtrMode };
 

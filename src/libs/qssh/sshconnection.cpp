@@ -967,7 +967,11 @@ void SshConnectionPrivate::closeConnection(SshErrorCode sshError,
     disconnect(&m_keepAliveTimer, nullptr, this, nullptr);
     try {
         m_channelManager->closeAllChannels(SshChannelManager::CloseAllAndReset);
-        m_sendFacility.sendDisconnectPacket(sshError, serverErrorString);
+
+        // Crypto initialization failed
+        if (m_sendFacility.encrypterIsValid()) {
+            m_sendFacility.sendDisconnectPacket(sshError, serverErrorString);
+        }
     } catch (...) {}  // Nothing sensible to be done here.
     if (m_error != SshNoError)
         emit error(userError);
