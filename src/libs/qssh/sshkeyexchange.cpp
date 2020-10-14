@@ -189,7 +189,8 @@ void SshKeyExchange::sendNewKeysPacket(const SshIncomingPacket &dhReply,
         m_ecdhKey.reset();
     }
 
-    const BigInt k = BigInt::decode(encodedK);
+    // If we try to just use "BigInt::decode(encodedK)" clang fails to link
+    const BigInt k = BigInt::decode(encodedK.data(), encodedK.size());
     m_k = AbstractSshPacket::encodeMpInt(k); // Roundtrip, as Botan encodes BigInts somewhat differently.
     printData("K", m_k);
     concatenatedData += m_k;
