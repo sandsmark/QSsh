@@ -42,7 +42,6 @@
 #include <botan/dh.h>
 #include <botan/numthry.h>
 #include <botan/pubkey.h>
-#include <botan/lookup.h>
 #include <botan/dsa.h>
 #include <botan/rsa.h>
 #include <botan/pk_ops.h>

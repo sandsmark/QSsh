@@ -40,15 +40,12 @@
 #include "sshlogging_p.h"
 
 #include <botan/block_cipher.h>
-#include <botan/cbc.h>
 #include <botan/hash.h>
-#include <botan/cipher_filter.h>
 #include <botan/pkcs8.h>
 #include <botan/dsa.h>
 #include <botan/rsa.h>
 #include <botan/ber_dec.h>
 #include <botan/pubkey.h>
-#include <botan/ctr.h>
 #include <botan/filters.h>
 #include <botan/ecdsa.h>
 
@@ -95,18 +92,25 @@ void SshAbstractCryptoFacility::recreateKeys(const SshKeyExchange &kex)
     if (m_sessionId.isEmpty())
         m_sessionId = kex.h();
    const QByteArray &rfcCryptAlgoName = cryptAlgoName(kex);
-   BlockCipher * const cipher
-               = BlockCipher::create_or_throw(botanCryptAlgoName(rfcCryptAlgoName))->clone();
 
-    m_cipherBlockSize = static_cast<quint32>(cipher->block_size());
+   { // Don't know how else to get this with the new botan API
+       std::unique_ptr<BlockCipher> cipher
+               = BlockCipher::create_or_throw(botanCryptAlgoName(rfcCryptAlgoName));
+       m_cipherBlockSize = static_cast<quint32>(cipher->block_size());
+   }
     const QByteArray ivData = generateHash(kex, ivChar(), m_cipherBlockSize);
     const InitializationVector iv(convertByteArray(ivData), m_cipherBlockSize);
 
-    const quint32 keySize = static_cast<quint32>(cipher->key_spec().maximum_keylength());
+    Keyed_Filter * const cipherMode
+            = makeCipherMode(botanCipherAlgoName(rfcCryptAlgoName), getMode(rfcCryptAlgoName));
+
+    const quint32 keySize = static_cast<quint32>(cipherMode->key_spec().maximum_keylength());
     const QByteArray cryptKeyData = generateHash(kex, keyChar(), keySize);
     SymmetricKey cryptKey(convertByteArray(cryptKeyData), keySize);
-    Keyed_Filter * const cipherMode
-            = makeCipherMode(cipher, getMode(rfcCryptAlgoName), iv, cryptKey);
+
+    cipherMode->set_key(cryptKey);
+    cipherMode->set_iv(iv);
+
     m_pipe.reset(new Pipe(cipherMode));
 
     m_macLength = botanHMacKeyLen(hMacAlgoName(kex));
@@ -141,12 +145,9 @@ void SshAbstractCryptoFacility::convert(QByteArray &data, quint32 offset,
     }
 }
 
-Keyed_Filter *SshAbstractCryptoFacility::makeCtrCipherMode(BlockCipher *cipher,
-        const InitializationVector &iv, const SymmetricKey &key)
+Keyed_Filter *SshAbstractCryptoFacility::makeCtrCipherMode(const QByteArray &cipher)
 {
-    StreamCipher_Filter *filter = new StreamCipher_Filter(new CTR_BE(cipher));
-    filter->set_key(key);
-    filter->set_iv(iv);
+    StreamCipher_Filter *filter = new StreamCipher_Filter(cipher.toStdString());
     return filter;
 }
 
@@ -201,17 +202,16 @@ QByteArray SshEncryptionFacility::hMacAlgoName(const SshKeyExchange &kex) const
     return kex.hMacAlgoClientToServer();
 }
 
-Keyed_Filter *SshEncryptionFacility::makeCipherMode(BlockCipher *cipher, Mode mode,
-        const InitializationVector &iv, const SymmetricKey &key)
+Keyed_Filter *SshEncryptionFacility::makeCipherMode(const QByteArray &cipher, const Mode mode)
 {
     if (mode == CtrMode) {
-        return makeCtrCipherMode(cipher, iv, key);
+        return new StreamCipher_Filter(cipher.toStdString());
     }
 
-    CBC_Encryption *cbc = new CBC_Encryption(cipher, new Null_Padding);
-    Cipher_Mode_Filter *filter = new Cipher_Mode_Filter(cbc);
-    filter->set_iv(iv);
-    filter->set_key(key);
+    qWarning() << "I haven't been able to test the CBC encryption modes, so if this files file a bug at https://github.com/sandsmark/QSsh";
+
+    Cipher_Mode_Filter *filter = new Cipher_Mode_Filter(
+                Cipher_Mode::create_or_throw(cipher.toStdString(), ENCRYPTION).release()); // We have to release, otherwise clang fails to link
     return filter;
 }
 
@@ -436,17 +436,16 @@ QByteArray SshDecryptionFacility::hMacAlgoName(const SshKeyExchange &kex) const
     return kex.hMacAlgoServerToClient();
 }
 
-Keyed_Filter *SshDecryptionFacility::makeCipherMode(BlockCipher *cipher, Mode mode, const InitializationVector &iv,
-    const SymmetricKey &key)
+Keyed_Filter *SshDecryptionFacility::makeCipherMode(const QByteArray &cipher, const Mode mode)
 {
     if (mode == CtrMode) {
-        return makeCtrCipherMode(cipher, iv, key);
+        return new StreamCipher_Filter(cipher.toStdString());
     }
 
-    CBC_Decryption *cbc = new CBC_Decryption(cipher, new Null_Padding);
-    Cipher_Mode_Filter *filter = new Cipher_Mode_Filter(cbc);
-    filter->set_iv(iv);
-    filter->set_key(key);
+    qWarning() << "I haven't been able to test the CBC decryption modes, so if this files file a bug at https://github.com/sandsmark/QSsh";
+
+    Cipher_Mode_Filter *filter = new Cipher_Mode_Filter(
+                Cipher_Mode::create_or_throw(cipher.toStdString(), DECRYPTION).release()); // We have to release, otherwise clang fails to link
     return filter;
 }
 

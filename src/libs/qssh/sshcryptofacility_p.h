@@ -31,8 +31,6 @@
 #ifndef SSHABSTRACTCRYPTOFACILITY_P_H
 #define SSHABSTRACTCRYPTOFACILITY_P_H
 
-#include <botan/mode_pad.h>
-#include <botan/hmac.h>
 #include <botan/filters.h>
 #include <botan/block_cipher.h>
 #include <botan/pipe.h>
@@ -67,8 +65,7 @@ protected:
 
     SshAbstractCryptoFacility();
     void convert(QByteArray &data, quint32 offset, quint32 dataSize) const;
-    Botan::Keyed_Filter *makeCtrCipherMode(Botan::BlockCipher *cipher,
-        const Botan::InitializationVector &iv, const Botan::SymmetricKey &key);
+    Botan::Keyed_Filter *makeCtrCipherMode(const QByteArray &cipher);
 
 private:
     SshAbstractCryptoFacility(const SshAbstractCryptoFacility &);
@@ -76,8 +73,7 @@ private:
 
     virtual QByteArray cryptAlgoName(const SshKeyExchange &kex) const = 0;
     virtual QByteArray hMacAlgoName(const SshKeyExchange &kex) const = 0;
-    virtual Botan::Keyed_Filter *makeCipherMode(Botan::BlockCipher *cipher,
-        Mode mode, const Botan::InitializationVector &iv, const Botan::SymmetricKey &key) = 0;
+    virtual Botan::Keyed_Filter *makeCipherMode(const QByteArray &cipher, const Mode mode) = 0;
     virtual char ivChar() const = 0;
     virtual char keyChar() const = 0;
     virtual char macChar() const = 0;
@@ -87,7 +83,7 @@ private:
     static Mode getMode(const QByteArray &algoName);
 
     QByteArray m_sessionId;
-    QScopedPointer<Botan::Pipe> m_pipe;
+    std::unique_ptr<Botan::Pipe> m_pipe;
     std::unique_ptr<Botan::MessageAuthenticationCode> m_hMac;
     quint32 m_cipherBlockSize;
     quint32 m_macLength;
