@@ -88,7 +88,7 @@ private:
 
     QByteArray m_sessionId;
     QScopedPointer<Botan::Pipe> m_pipe;
-    QScopedPointer<Botan::HMAC> m_hMac;
+    std::unique_ptr<Botan::MessageAuthenticationCode> m_hMac;
     quint32 m_cipherBlockSize;
     quint32 m_macLength;
 };

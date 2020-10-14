@@ -112,8 +112,7 @@ void SshAbstractCryptoFacility::recreateKeys(const SshKeyExchange &kex)
     m_macLength = botanHMacKeyLen(hMacAlgoName(kex));
     const QByteArray hMacKeyData = generateHash(kex, macChar(), macLength());
     SymmetricKey hMacKey(convertByteArray(hMacKeyData), macLength());
-    const HashFunction * const hMacProto = HashFunction::create(botanHMacAlgoName(hMacAlgoName(kex)))->clone();
-    m_hMac.reset(new HMAC(hMacProto->clone()));
+    m_hMac = MessageAuthenticationCode::create_or_throw("HMAC(" + std::string(botanHMacAlgoName(hMacAlgoName(kex))) + ")");
     m_hMac->set_key(hMacKey);
 }
 
