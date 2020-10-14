@@ -107,13 +107,12 @@ public:
     ~SshEncryptionFacility();
 
 private:
-    virtual QByteArray cryptAlgoName(const SshKeyExchange &kex) const;
-    virtual QByteArray hMacAlgoName(const SshKeyExchange &kex) const;
-    virtual Botan::Keyed_Filter *makeCipherMode(Botan::BlockCipher *cipher,
-        Mode mode, const Botan::InitializationVector &iv, const Botan::SymmetricKey &key);
-    virtual char ivChar() const { return 'A'; }
-    virtual char keyChar() const { return 'C'; }
-    virtual char macChar() const { return 'E'; }
+    QByteArray cryptAlgoName(const SshKeyExchange &kex) const override;
+    QByteArray hMacAlgoName(const SshKeyExchange &kex) const override;
+    Botan::Keyed_Filter *makeCipherMode(const QByteArray &cipher, const Mode mode) override;
+    char ivChar() const override { return 'A'; }
+    char keyChar() const override { return 'C'; }
+    char macChar() const override { return 'E'; }
 
     bool createAuthenticationKeyFromPKCS8(const QByteArray &privKeyFileContents,
         QList<Botan::BigInt> &pubKeyParams, QList<Botan::BigInt> &allKeyParams, QString &error);
@@ -140,13 +139,12 @@ public:
     void decrypt(QByteArray &data, quint32 offset, quint32 dataSize) const;
 
 private:
-    virtual QByteArray cryptAlgoName(const SshKeyExchange &kex) const;
-    virtual QByteArray hMacAlgoName(const SshKeyExchange &kex) const;
-    virtual Botan::Keyed_Filter *makeCipherMode(Botan::BlockCipher *cipher,
-        Mode mode, const Botan::InitializationVector &iv, const Botan::SymmetricKey &key);
-    virtual char ivChar() const { return 'B'; }
-    virtual char keyChar() const { return 'D'; }
-    virtual char macChar() const { return 'F'; }
+    QByteArray cryptAlgoName(const SshKeyExchange &kex) const override;
+    QByteArray hMacAlgoName(const SshKeyExchange &kex) const override;
+    Botan::Keyed_Filter *makeCipherMode(const QByteArray &cipher, const Mode mode) override;
+    char ivChar() const override { return 'B'; }
+    char keyChar() const override { return 'D'; }
+    char macChar() const override { return 'F'; }
 };
 
 } // namespace Internal

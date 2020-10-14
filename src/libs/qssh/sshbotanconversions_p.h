@@ -75,8 +75,35 @@ inline const char *botanKeyExchangeAlgoName(const QByteArray &rfcAlgoName)
                              .arg(QString::fromLatin1(rfcAlgoName)));
 }
 
+inline const char *botanCipherAlgoName(const QByteArray &rfcAlgoName)
+{
+
+    if (rfcAlgoName == SshCapabilities::CryptAlgoAes128Cbc) {
+        return "CBC(AES-128)";
+    }
+    if (rfcAlgoName == SshCapabilities::CryptAlgoAes128Ctr) {
+        return "CTR(AES-128)";
+    }
+    if (rfcAlgoName == SshCapabilities::CryptAlgo3DesCbc) {
+        return "CBC(TripleDES)";
+    }
+    if (rfcAlgoName == SshCapabilities::CryptAlgo3DesCtr) {
+        return "CTR(TripleDES)";
+    }
+    if (rfcAlgoName == SshCapabilities::CryptAlgoAes192Ctr) {
+        return "CBR(AES-192)";
+    }
+    if (rfcAlgoName == SshCapabilities::CryptAlgoAes256Ctr) {
+        return "CTR(AES-256)";
+    }
+    throw SshClientException(SshInternalError, SSH_TR("Unexpected cipher \"%1\"")
+                             .arg(QString::fromLatin1(rfcAlgoName)));
+}
+
+
 inline const char *botanCryptAlgoName(const QByteArray &rfcAlgoName)
 {
+
     if (rfcAlgoName == SshCapabilities::CryptAlgoAes128Cbc
             || rfcAlgoName == SshCapabilities::CryptAlgoAes128Ctr) {
         return "AES-128";

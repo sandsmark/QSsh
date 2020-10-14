@@ -458,7 +458,7 @@ void SshDecryptionFacility::decrypt(QByteArray &data, quint32 offset,
     const char * const start = data.constData() + offset;
     const char * const end = start + dataSize;
     for (const char *c = start; c < end; ++c)
-        qCDebug(sshLog, ) << "'" << *c << "' (0x" << (static_cast<int>(*c) & 0xff) << ")";
+        qCDebug(sshLog) << "'" << *c << "' (0x" << (static_cast<int>(*c) & 0xff) << ")";
 }
 
 } // namespace Internal
