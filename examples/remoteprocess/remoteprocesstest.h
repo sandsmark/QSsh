@@ -34,6 +34,7 @@
 #include <qssh/sshremoteprocessrunner.h>
 
 #include <QObject>
+#include <QScopedPointer>
 
 QT_FORWARD_DECLARE_CLASS(QTextStream)
 QT_FORWARD_DECLARE_CLASS(QTimer)
@@ -70,7 +71,7 @@ private:
 
     const QSsh::SshConnectionParameters m_sshParams;
     QTimer * const m_timeoutTimer;
-    QTextStream *m_textStream;
+    QScopedPointer<QTextStream> m_textStream;
     QSsh::SshConnection *m_sshConnection;
     QSsh::SshRemoteProcessRunner * const m_remoteRunner;
     QSsh::SshRemoteProcess::Ptr m_catProcess;
