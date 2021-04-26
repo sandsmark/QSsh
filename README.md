@@ -32,7 +32,20 @@ make (or mingw32-make or nmake depending on your platform)
 Examples
 --------
 
- * [ssh shell](tests/manual/ssh/shell/), similar to a normal command line `ssh` client.
+### Complete applications
+
+ * [ssh shell](examples/ssh-shell/), similar to a normal command line `ssh` client.
  * [Graphical SFTP browser](tests/manual/ssh/sftpfsmodel/), how to use the SFTP file system model with a QTreeView.
- * [Auto tests](tests/auto/ssh/), how to do X11 forwarding, remote command execution, file upload and download, and basically everything else that is supported.
  * [Secure Uploader](examples/SecureUploader/), how to upload a file.
+
+
+### Various usage examples
+ * [Tunneling and forwarding](examples/tunnel/)
+ * [SFTP](examples/sftp/)
+ * [Remote process handling](examples/remoteprocess/)
+
+
+### Other
+
+ * [Error handling](examples/errorhandling/)
+ * [Auto tests](tests/auto/ssh/)
