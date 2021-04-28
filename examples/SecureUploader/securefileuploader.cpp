@@ -43,7 +43,7 @@ void SecureFileUploader::upload(const QString &localFile, const QString &dest, c
     params.timeout = 30;
     params.setPort(22);
 
-    m_connection = new QSsh::SshConnection(params, this); // TODO free this pointer!
+    m_connection = new QSsh::SshConnection(params, this);
 
     connect(m_connection, SIGNAL(connected()), SLOT(onConnected()));
     connect(m_connection, SIGNAL(error(QSsh::SshError)), SLOT(onConnectionError(QSsh::SshError)));
