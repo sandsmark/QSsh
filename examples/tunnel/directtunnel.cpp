@@ -51,6 +51,7 @@ DirectTunnel::DirectTunnel(const SshConnectionParameters &parameters, QObject *p
     : QObject(parent),
       m_connection(new SshConnection(parameters, this)),
       m_targetServer(new QTcpServer(this)),
+      m_targetSocket(nullptr),
       m_expectingChannelClose(false)
 {
     connect(m_connection, SIGNAL(connected()), SLOT(handleConnected()));
