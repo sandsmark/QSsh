@@ -75,7 +75,7 @@ SshRemoteProcess::SshRemoteProcess(quint32 channelId, Internal::SshSendFacility 
 SshRemoteProcess::~SshRemoteProcess()
 {
     QSSH_ASSERT(d->channelState() != Internal::AbstractSshChannel::SessionEstablished);
-    close();
+    SshRemoteProcess::close();
     delete d;
 }
 
