@@ -91,7 +91,7 @@ protected:
     static quint32 maxPacketSize();
 
     quint32 maxDataSize() const;
-    void checkChannelActive();
+    void checkChannelActive() const;
 
     SshSendFacility &m_sendFacility;
     QTimer m_timeoutTimer;

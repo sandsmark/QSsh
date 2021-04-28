@@ -261,7 +261,7 @@ void AbstractSshChannel::closeChannel()
     }
 }
 
-void AbstractSshChannel::checkChannelActive()
+void AbstractSshChannel::checkChannelActive() const
 {
     if (channelState() == Inactive || channelState() == Closed)
         throw SSH_SERVER_EXCEPTION(SSH_DISCONNECT_PROTOCOL_ERROR,
