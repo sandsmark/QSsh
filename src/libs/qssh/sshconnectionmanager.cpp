@@ -49,10 +49,10 @@ public:
     SshConnection *connection;
     bool scheduledForRemoval;
 };
-bool operator==(const UnaquiredConnection &c1, const UnaquiredConnection &c2) {
+bool operator==(UnaquiredConnection c1, UnaquiredConnection c2) {
     return c1.connection == c2.connection;
 }
-bool operator!=(const UnaquiredConnection &c1, const UnaquiredConnection &c2) {
+bool operator!=(UnaquiredConnection c1, UnaquiredConnection c2) {
     return !(c1 == c2);
 }
 

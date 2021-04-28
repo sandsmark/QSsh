@@ -24,7 +24,7 @@
 
 void showSyntax();
 QString getPassword();
-void upload(const QString &orig, const QString &dest, const QString passwd);
+void upload(const QString &orig, const QString &dest, const QString &passwd);
 
 
 int main(int argc, char *argv[])
@@ -63,7 +63,7 @@ QString getPassword()
 }
 
 
-void upload(const QString &orig, const QString &dest, const QString passwd)
+void upload(const QString &orig, const QString &dest, const QString &passwd)
 {
     // Parse destination with format "username@host:/destination"
 

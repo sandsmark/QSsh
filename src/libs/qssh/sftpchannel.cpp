@@ -450,21 +450,21 @@ void SftpChannelPrivate::handleHandle()
     }
 }
 
-void SftpChannelPrivate::handleLsHandle(const JobMap::Iterator &it)
+void SftpChannelPrivate::handleLsHandle(JobMap::Iterator it)
 {
     SftpListDir::Ptr op = it.value().staticCast<SftpListDir>();
     sendData(m_outgoingPacket.generateReadDir(op->remoteHandle,
         op->jobId).rawData());
 }
 
-void SftpChannelPrivate::handleCreateFileHandle(const JobMap::Iterator &it)
+void SftpChannelPrivate::handleCreateFileHandle(JobMap::Iterator it)
 {
     SftpCreateFile::Ptr op = it.value().staticCast<SftpCreateFile>();
     sendData(m_outgoingPacket.generateCloseHandle(op->remoteHandle,
         op->jobId).rawData());
 }
 
-void SftpChannelPrivate::handleGetHandle(const JobMap::Iterator &it)
+void SftpChannelPrivate::handleGetHandle(JobMap::Iterator it)
 {
     SftpDownload::Ptr op = it.value().staticCast<SftpDownload>();
     sendData(m_outgoingPacket.generateFstat(op->remoteHandle,
@@ -472,7 +472,7 @@ void SftpChannelPrivate::handleGetHandle(const JobMap::Iterator &it)
     op->statRequested = true;
 }
 
-void SftpChannelPrivate::handlePutHandle(const JobMap::Iterator &it)
+void SftpChannelPrivate::handlePutHandle(JobMap::Iterator it)
 {
     SftpUploadFile::Ptr op = it.value().staticCast<SftpUploadFile>();
     if (op->parentJob && op->parentJob->hasError)
@@ -518,7 +518,7 @@ void SftpChannelPrivate::handleStatus()
     }
 }
 
-void SftpChannelPrivate::handleStatusGeneric(const JobMap::Iterator &it,
+void SftpChannelPrivate::handleStatusGeneric(JobMap::Iterator it,
     const SftpStatusResponse &response)
 {
     AbstractSftpOperation::Ptr op = it.value();
@@ -527,7 +527,7 @@ void SftpChannelPrivate::handleStatusGeneric(const JobMap::Iterator &it,
     m_jobs.erase(it);
 }
 
-void SftpChannelPrivate::handleMkdirStatus(const JobMap::Iterator &it,
+void SftpChannelPrivate::handleMkdirStatus(JobMap::Iterator it,
     const SftpStatusResponse &response)
 {
     SftpMakeDir::Ptr op = it.value().staticCast<SftpMakeDir>();
@@ -600,7 +600,7 @@ void SftpChannelPrivate::handleMkdirStatus(const JobMap::Iterator &it,
     m_jobs.erase(it);
 }
 
-void SftpChannelPrivate::handleLsStatus(const JobMap::Iterator &it,
+void SftpChannelPrivate::handleLsStatus(JobMap::Iterator it,
     const SftpStatusResponse &response)
 {
     SftpListDir::Ptr op = it.value().staticCast<SftpListDir>();
@@ -661,7 +661,7 @@ void SftpChannelPrivate::handleLsStatus(const JobMap::Iterator &it,
     }
 }
 
-void SftpChannelPrivate::handleGetStatus(const JobMap::Iterator &it,
+void SftpChannelPrivate::handleGetStatus(JobMap::Iterator it,
     const SftpStatusResponse &response)
 {
     SftpDownload::Ptr op = it.value().staticCast<SftpDownload>();
@@ -716,7 +716,7 @@ void SftpChannelPrivate::handleGetStatus(const JobMap::Iterator &it,
     }
 }
 
-void SftpChannelPrivate::handlePutStatus(const JobMap::Iterator &it,
+void SftpChannelPrivate::handlePutStatus(JobMap::Iterator it,
     const SftpStatusResponse &response)
 {
     SftpUploadFile::Ptr job = it.value().staticCast<SftpUploadFile>();
@@ -1060,7 +1060,7 @@ void SftpChannelPrivate::reportRequestError(const AbstractSftpOperationWithHandl
     job->hasError = true;
 }
 
-void SftpChannelPrivate::finishTransferRequest(const JobMap::Iterator &it)
+void SftpChannelPrivate::finishTransferRequest(JobMap::Iterator it)
 {
     AbstractSftpTransfer::Ptr job = it.value().staticCast<AbstractSftpTransfer>();
     if (job->inFlightCount == 1)
@@ -1121,13 +1121,13 @@ void SftpChannelPrivate::attributesToFileInfo(const SftpFileAttributes &attribut
     }
 }
 
-void SftpChannelPrivate::removeTransferRequest(const JobMap::Iterator &it)
+void SftpChannelPrivate::removeTransferRequest(JobMap::Iterator it)
 {
     --it.value().staticCast<AbstractSftpTransfer>()->inFlightCount;
     m_jobs.erase(it);
 }
 
-void SftpChannelPrivate::sendWriteRequest(const JobMap::Iterator &it)
+void SftpChannelPrivate::sendWriteRequest(JobMap::Iterator it)
 {
     SftpUploadFile::Ptr job = it.value().staticCast<SftpUploadFile>();
 
@@ -1151,7 +1151,7 @@ void SftpChannelPrivate::sendWriteRequest(const JobMap::Iterator &it)
     }
 }
 
-void SftpChannelPrivate::spawnWriteRequests(const JobMap::Iterator &it)
+void SftpChannelPrivate::spawnWriteRequests(JobMap::Iterator it)
 {
     SftpUploadFile::Ptr op = it.value().staticCast<SftpUploadFile>();
     op->calculateInFlightCount(AbstractSftpPacket::MaxDataSize);

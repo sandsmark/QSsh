@@ -90,28 +90,28 @@ private:
 
     void handleDownloadDir(SftpListDir::Ptr op, const QList<SftpFileInfo> & fileInfoList);
 
-    void handleStatusGeneric(const JobMap::Iterator &it,
+    void handleStatusGeneric(JobMap::Iterator it,
         const SftpStatusResponse &response);
-    void handleMkdirStatus(const JobMap::Iterator &it,
+    void handleMkdirStatus(JobMap::Iterator it,
         const SftpStatusResponse &response);
-    void handleLsStatus(const JobMap::Iterator &it,
+    void handleLsStatus(JobMap::Iterator it,
         const SftpStatusResponse &response);
-    void handleGetStatus(const JobMap::Iterator &it,
+    void handleGetStatus(JobMap::Iterator it,
         const SftpStatusResponse &response);
-    void handlePutStatus(const JobMap::Iterator &it,
+    void handlePutStatus(JobMap::Iterator it,
         const SftpStatusResponse &response);
 
-    void handleLsHandle(const JobMap::Iterator &it);
-    void handleCreateFileHandle(const JobMap::Iterator &it);
-    void handleGetHandle(const JobMap::Iterator &it);
-    void handlePutHandle(const JobMap::Iterator &it);
+    void handleLsHandle(JobMap::Iterator it);
+    void handleCreateFileHandle(JobMap::Iterator it);
+    void handleGetHandle(JobMap::Iterator it);
+    void handlePutHandle(JobMap::Iterator it);
 
     void spawnReadRequests(const SftpDownload::Ptr &job);
-    void spawnWriteRequests(const JobMap::Iterator &it);
+    void spawnWriteRequests(JobMap::Iterator it);
     void sendReadRequest(const SftpDownload::Ptr &job, quint32 requestId);
-    void sendWriteRequest(const JobMap::Iterator &it);
-    void finishTransferRequest(const JobMap::Iterator &it);
-    void removeTransferRequest(const JobMap::Iterator &it);
+    void sendWriteRequest(JobMap::Iterator it);
+    void finishTransferRequest(JobMap::Iterator it);
+    void removeTransferRequest(JobMap::Iterator it);
     void reportRequestError(const AbstractSftpOperationWithHandle::Ptr &job, const SftpError errorType,
         const QString &error);
     void sendTransferCloseHandle(const AbstractSftpTransfer::Ptr &job,
