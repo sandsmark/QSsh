@@ -67,7 +67,7 @@ public:
             socket->connectToServer(serverBasePath + QString::number(displayInfo.display));
             m_socket = socket;
         }
-        connect(m_socket, &QIODevice::readyRead,
+        connect(m_socket, &QIODevice::readyRead, this,
                 [this] { emit dataAvailable(m_socket->readAll()); });
     }
 
@@ -132,17 +132,23 @@ void SshX11Channel::handleOpenSuccessInternal()
 {
     m_sendFacility.sendChannelOpenConfirmationPacket(remoteChannel(), localChannelId(),
                                                      initialWindowSize(), maxPacketSize());
-    connect(m_x11Socket, &X11Socket::connected, [this] {
-        qCDebug(sshLog) << "x11 socket connected for channel" << localChannelId();
-        if (!m_queuedRemoteData.isEmpty())
-            handleRemoteData(QByteArray());
-    });
-    connect(m_x11Socket, &X11Socket::error,
-            [this](const QString &msg) { emit error(tr("X11 socket error: %1").arg(msg)); });
-    connect(m_x11Socket, &X11Socket::dataAvailable, [this](const QByteArray &data) {
-        qCDebug(sshLog) << "sending " << data.size() << "bytes from x11 socket to remote side "
-                           "in channel" << localChannelId();
-        sendData(data);
+    connect(m_x11Socket, &X11Socket::connected, this,
+        [this] {
+            qCDebug(sshLog) << "x11 socket connected for channel" << localChannelId();
+            if (!m_queuedRemoteData.isEmpty())
+                handleRemoteData(QByteArray());
+        }
+    );
+    connect(m_x11Socket, &X11Socket::error, this,
+        [this](const QString &msg) {
+            emit error(tr("X11 socket error: %1").arg(msg));
+        }
+    );
+    connect(m_x11Socket, &X11Socket::dataAvailable, this,
+        [this](const QByteArray &data) {
+            qCDebug(sshLog) << "sending " << data.size() << "bytes from x11 socket to remote side "
+                               "in channel" << localChannelId();
+            sendData(data);
     });
     m_x11Socket->establishConnection(m_displayInfo);
 }

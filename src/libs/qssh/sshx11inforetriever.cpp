@@ -46,91 +46,93 @@ SshX11InfoRetriever::SshX11InfoRetriever(const QString &displayName, QObject *pa
       m_xauthProc(new QProcess(this)),
       m_xauthFile(new QTemporaryFile(this))
 {
-    connect(m_xauthProc, &QProcess::errorOccurred, [this] {
-        if (m_xauthProc->error() == QProcess::FailedToStart) {
-            emitFailure(tr("Could not start xauth: %1").arg(m_xauthProc->errorString()));
+    connect(m_xauthProc, &QProcess::errorOccurred, this,
+        [this] {
+            if (m_xauthProc->error() == QProcess::FailedToStart) {
+                emitFailure(tr("Could not start xauth: %1").arg(m_xauthProc->errorString()));
+            }
         }
-    });
-    connect(m_xauthProc,
-            static_cast<void (QProcess::*)(int,QProcess::ExitStatus)>(&QProcess::finished),
-            [this] {
-        if (m_xauthProc->exitStatus() != QProcess::NormalExit) {
-            emitFailure(tr("xauth crashed: %1").arg(m_xauthProc->errorString()));
-            return;
-        }
-        if (m_xauthProc->exitCode() != 0) {
-            emitFailure(tr("xauth failed with exit code %1.").arg(m_xauthProc->exitCode()));
-            return;
-        }
-        switch (m_state) {
-        case State::RunningGenerate:
-            m_state = State::RunningList;
-            m_xauthProc->start(QStringLiteral("xauth"), QStringList{
-                                   QStringLiteral("-f"),
-                                   m_xauthFile->fileName(),
-                                   QStringLiteral("list"),
-                                   m_displayName});
-            break;
-        case State::RunningList: {
-            const QByteArrayList outputLines = m_xauthProc->readAllStandardOutput().split('\n');
-            if (outputLines.empty()) {
-                emitFailure(tr("Unexpected xauth output."));
+    );
+    connect(m_xauthProc, static_cast<void (QProcess::*)(int,QProcess::ExitStatus)>(&QProcess::finished), this,
+        [this] {
+            if (m_xauthProc->exitStatus() != QProcess::NormalExit) {
+                emitFailure(tr("xauth crashed: %1").arg(m_xauthProc->errorString()));
                 return;
             }
-            const QByteArrayList data = outputLines.first().simplified().split(' ');
-            if (data.size() < 3 || data.at(1) != xauthProtocol() || data.at(2).isEmpty()) {
-                emitFailure(tr("Unexpected xauth output."));
+            if (m_xauthProc->exitCode() != 0) {
+                emitFailure(tr("xauth failed with exit code %1.").arg(m_xauthProc->exitCode()));
                 return;
             }
-            X11DisplayInfo displayInfo;
-            displayInfo.displayName = m_displayName;
-            const int colonIndex = m_displayName.indexOf(QLatin1Char(':'));
-            if (colonIndex == -1) {
-                emitFailure(tr("Invalid display name \"%1\"").arg(m_displayName));
-                return;
-            }
-            displayInfo.hostName = m_displayName.mid(0, colonIndex);
-            const int dotIndex = m_displayName.indexOf(QLatin1Char('.'), colonIndex + 1);
-            const QString display = m_displayName.mid(colonIndex + 1,
-                                                      dotIndex == -1 ? -1
-                                                                     : dotIndex - colonIndex - 1);
-            if (display.isEmpty()) {
-                emitFailure(tr("Invalid display name \"%1\"").arg(m_displayName));
-                return;
-            }
-            bool ok;
-            displayInfo.display = display.toInt(&ok);
-            if (!ok) {
-                emitFailure(tr("Invalid display name \"%1\"").arg(m_displayName));
-                return;
-            }
-            if (dotIndex != -1) {
-                displayInfo.screen = m_displayName.mid(dotIndex + 1).toInt(&ok);
+            switch (m_state) {
+            case State::RunningGenerate:
+                m_state = State::RunningList;
+                m_xauthProc->start(QStringLiteral("xauth"), QStringList{
+                                       QStringLiteral("-f"),
+                                       m_xauthFile->fileName(),
+                                       QStringLiteral("list"),
+                                       m_displayName});
+                break;
+            case State::RunningList: {
+                const QByteArrayList outputLines = m_xauthProc->readAllStandardOutput().split('\n');
+                if (outputLines.empty()) {
+                    emitFailure(tr("Unexpected xauth output."));
+                    return;
+                }
+                const QByteArrayList data = outputLines.first().simplified().split(' ');
+                if (data.size() < 3 || data.at(1) != xauthProtocol() || data.at(2).isEmpty()) {
+                    emitFailure(tr("Unexpected xauth output."));
+                    return;
+                }
+                X11DisplayInfo displayInfo;
+                displayInfo.displayName = m_displayName;
+                const int colonIndex = m_displayName.indexOf(QLatin1Char(':'));
+                if (colonIndex == -1) {
+                    emitFailure(tr("Invalid display name \"%1\"").arg(m_displayName));
+                    return;
+                }
+                displayInfo.hostName = m_displayName.mid(0, colonIndex);
+                const int dotIndex = m_displayName.indexOf(QLatin1Char('.'), colonIndex + 1);
+                const QString display = m_displayName.mid(colonIndex + 1,
+                                                          dotIndex == -1 ? -1
+                                                                         : dotIndex - colonIndex - 1);
+                if (display.isEmpty()) {
+                    emitFailure(tr("Invalid display name \"%1\"").arg(m_displayName));
+                    return;
+                }
+                bool ok;
+                displayInfo.display = display.toInt(&ok);
                 if (!ok) {
                     emitFailure(tr("Invalid display name \"%1\"").arg(m_displayName));
                     return;
                 }
+                if (dotIndex != -1) {
+                    displayInfo.screen = m_displayName.midRef(dotIndex + 1).toInt(&ok);
+                    if (!ok) {
+                        emitFailure(tr("Invalid display name \"%1\"").arg(m_displayName));
+                        return;
+                    }
+                }
+                displayInfo.protocol = data.at(1);
+                displayInfo.cookie = QByteArray::fromHex(data.at(2));
+                displayInfo.randomCookie.resize(displayInfo.cookie.size());
+                try {
+                    Botan::AutoSeeded_RNG rng;
+                    rng.randomize(reinterpret_cast<Botan::uint8_t *>(displayInfo.randomCookie.data()),
+                                  displayInfo.randomCookie.size());
+                } catch (const std::exception &ex) {
+                    emitFailure(tr("Failed to generate random cookie: %1")
+                                .arg(QLatin1String(ex.what())));
+                    return;
+                }
+                emit success(displayInfo);
+                deleteLater();
+                break;
             }
-            displayInfo.protocol = data.at(1);
-            displayInfo.cookie = QByteArray::fromHex(data.at(2));
-            displayInfo.randomCookie.resize(displayInfo.cookie.size());
-            try {
-                Botan::AutoSeeded_RNG rng;
-                rng.randomize(reinterpret_cast<Botan::uint8_t *>(displayInfo.randomCookie.data()),
-                              displayInfo.randomCookie.size());
-            } catch (const std::exception &ex) {
-                emitFailure(tr("Failed to generate random cookie: %1")
-                            .arg(QLatin1String(ex.what())));
-                return;
+            default:
+                emitFailure(tr("Internal error"));
             }
-            emit success(displayInfo);
-            deleteLater();
-            break;
         }
-        default:
-            emitFailure(tr("Internal error"));
-        }
-    });
+    );
 }
 
 void SshX11InfoRetriever::start()
