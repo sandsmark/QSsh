@@ -17,7 +17,10 @@ else(MSVC)
     set_property(GLOBAL PROPERTY BOTAN_LIB PkgConfig::Botan)
 endif(MSVC)
 
-find_package(Qt5 COMPONENTS Core Widgets Network  REQUIRED)
+find_package(QT NAMES Qt5 Qt6 COMPONENTS Core Quick REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core Widgets Network REQUIRED)
+
+message(STATUS "Found Qt version ${QT_VERSION_MAJOR}")
 
 # qt
 set(CMAKE_AUTOMOC ON)

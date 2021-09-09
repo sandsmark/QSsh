@@ -129,8 +129,8 @@ QList<QByteArray> SshCapabilities::commonCapabilities(const QList<QByteArray> &m
             "Client list: %2\n"
             "Server list: %3")
             .arg(QString::fromLatin1(group))
-            .arg(QString::fromLocal8Bit(listAsByteArray(myCapabilities).data()))
-            .arg(QString::fromLocal8Bit(listAsByteArray(serverCapabilities).data())));
+            .arg(QString::fromLocal8Bit(listAsByteArray(myCapabilities)))
+            .arg(QString::fromLocal8Bit(listAsByteArray(serverCapabilities))));
 
 }
 

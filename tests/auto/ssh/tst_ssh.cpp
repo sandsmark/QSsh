@@ -1000,7 +1000,7 @@ static QFileInfo searchInDirectory(const QStringList &execs, const QFileInfo &di
     for (const QString &exec : execs) {
         fi.setFile(dir, exec);
         if (fi.isFile() && fi.isExecutable())
-            return fi.absoluteFilePath();
+            return fi;
     }
     return QFileInfo();
 }

@@ -69,7 +69,7 @@ void SshIncomingPacket::reset()
 void SshIncomingPacket::consumeData(QByteArray &newData)
 {
     qCDebug(sshLog, "%s: current data size = %d, new data size = %d",
-        Q_FUNC_INFO, m_data.size(), newData.size());
+        Q_FUNC_INFO, int(m_data.size()), int(newData.size()));
 
     if (isComplete() || newData.isEmpty())
         return;
@@ -98,7 +98,7 @@ void SshIncomingPacket::consumeData(QByteArray &newData)
     qCDebug(sshLog, "Took %d bytes from new data", bytesToTake);
     if (isComplete()) {
         qCDebug(sshLog, "Message complete. Overall size: %u, payload size: %u",
-            m_data.size(), m_length - paddingLength() - 1);
+            int(m_data.size()), m_length - paddingLength() - 1);
         decrypt();
         ++m_serverSeqNr;
     }

@@ -44,9 +44,9 @@ SftpIncomingPacket::SftpIncomingPacket() : m_length(0)
 void SftpIncomingPacket::consumeData(QByteArray &newData)
 {
     qCDebug(sshLog, "%s: current data size = %d, new data size = %d", Q_FUNC_INFO,
-        m_data.size(), newData.size());
+        int(m_data.size()), int(newData.size()));
 
-    if (isComplete() || dataSize() + newData.size() < sizeof m_length)
+    if (isComplete() || dataSize() + newData.size() < int(sizeof m_length))
         return;
 
     if (dataSize() < sizeof m_length) {

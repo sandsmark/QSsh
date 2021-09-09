@@ -71,7 +71,7 @@ namespace {
 
     void printData(const char *name, const QByteArray &data)
     {
-        qCDebug(sshLog, "The client thinks the %s has length %d and is: %s", name, data.count(),
+        qCDebug(sshLog, "The client thinks the %s has length %d and is: %s", name, int(data.count()),
                 data.toHex().constData());
     }
 

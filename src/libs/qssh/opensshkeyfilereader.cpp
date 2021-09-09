@@ -124,7 +124,7 @@ void OpenSshKeyFileReader::doParse(const QByteArray &payload)
     } catch (const SshPacketParseException &) {
         throwException(SSH_TR("Parse error."));
     } catch (const Exception &e) {
-        throwException(QLatin1String(e.what()));
+        throwException(QString::fromLocal8Bit(e.what()));
     }
 }
 
@@ -147,7 +147,7 @@ void OpenSshKeyFileReader::decryptPrivateKeyList()
         return;
     if (m_kdf != "bcrypt") {
         throwException(SSH_TR("Unexpected key derivation function '%1'.")
-                       .arg(QLatin1String(m_kdf)));
+                       .arg(QString::fromLatin1(m_kdf)));
     }
 
     // OpenSSH uses a proprietary algorithm for the key derivation. We'd basically have to

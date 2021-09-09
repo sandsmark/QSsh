@@ -47,7 +47,7 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QNetworkProxy>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QTcpSocket>
 
 namespace QSsh {
@@ -347,7 +347,7 @@ void SshConnectionPrivate::handleIncomingData()
         if (!canUseSocket())
             return;
         m_incomingData += m_socket->readAll();
-        qCDebug(sshLog, "state = %d, remote data size = %d", m_state, m_incomingData.count());
+        qCDebug(sshLog, "state = %d, remote data size = %d", int(m_state), int(m_incomingData.count()));
         if (m_serverId.isEmpty())
             handleServerId();
         handlePackets();
@@ -367,7 +367,7 @@ void SshConnectionPrivate::handleIncomingData()
 void SshConnectionPrivate::handleServerId()
 {
     qCDebug(sshLog, "%s: incoming data size = %d, incoming data = '%s'",
-        Q_FUNC_INFO, m_incomingData.count(), m_incomingData.data());
+        Q_FUNC_INFO, int(m_incomingData.count()), m_incomingData.data());
     const int newLinePos = m_incomingData.indexOf('\n');
     if (newLinePos == -1)
         return; // Not enough data yet.
@@ -401,14 +401,15 @@ void SshConnectionPrivate::handleServerId()
     // "printable US-ASCII characters, with the exception of whitespace characters
     // and the minus sign"
     QString legalString = QLatin1String("[]!\"#$!&'()*+,./0-9:;<=>?@A-Z[\\\\^_`a-z{|}~]+");
-    const QRegExp versionIdpattern(QString::fromLatin1("SSH-(%1)-%1(?: .+)?.*").arg(legalString));
-    if (!versionIdpattern.exactMatch(QString::fromLatin1(m_serverId))) {
+    const QRegularExpression versionIdpattern(QString::fromLatin1("^SSH-(%1)-%1(?: .+)?.*$").arg(legalString));
+    const QRegularExpressionMatch match = versionIdpattern.match(QString::fromLatin1(m_serverId));
+    if (!match.hasMatch()) {
         throw SshServerException(SSH_DISCONNECT_PROTOCOL_ERROR,
             "Identification string is invalid.",
             tr("Server Identification string \"%1\" is invalid.")
                     .arg(QString::fromLatin1(m_serverId)));
     }
-    const QString serverProtoVersion = versionIdpattern.cap(1);
+    const QString serverProtoVersion = match.captured(1);
     if (serverProtoVersion != QLatin1String("2.0") && serverProtoVersion != QLatin1String("1.99")) {
         throw SshServerException(SSH_DISCONNECT_PROTOCOL_VERSION_NOT_SUPPORTED,
             "Invalid protocol version.",

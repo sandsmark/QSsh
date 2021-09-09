@@ -138,7 +138,7 @@ QByteArray AbstractSshPacket::generateMac(const SshAbstractCryptoFacility &crypt
     quint32 seqNr) const
 {
     const quint32 seqNrBe = qToBigEndian(seqNr);
-    QByteArray data(reinterpret_cast<const char *>(&seqNrBe), sizeof seqNrBe);
+    QByteArray data(reinterpret_cast<const char *>(&seqNrBe), int(sizeof seqNrBe));
     data += QByteArray(m_data.constData(), length() + 4);
     return crypt.generateMac(data, data.size());
 }
@@ -150,8 +150,13 @@ quint32 AbstractSshPacket::minPacketSize() const
 
 void AbstractSshPacket::setLengthField(QByteArray &data)
 {
-    const quint32 length = qToBigEndian(data.size() - 4);
+    Q_ASSERT(data.size() >= 4);
+    const quint32 length = qToBigEndian<quint32>(data.size() - 4);
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    data.replace(qsizetype(0), qsizetype(4), reinterpret_cast<const char *>(&length), qsizetype(4));
+#else
     data.replace(0, 4, reinterpret_cast<const char *>(&length), 4);
+#endif
 }
 
 } // namespace Internal
