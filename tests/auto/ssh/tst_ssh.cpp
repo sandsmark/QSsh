@@ -43,6 +43,10 @@
 #include <QTimer>
 #include <QtTest>
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+#include <QRandomGenerator>
+#endif
+
 #include <cstdlib>
 
 using namespace QSsh;
@@ -209,9 +213,13 @@ void tst_Ssh::directTunnel()
     // Send data through the tunnel and check that it is received by the "remote" side
     static const QByteArray testData("Urgsblubb?");
     QByteArray clientDataReceivedByServer;
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    connect(targetSocket, &QAbstractSocket::errorOccurred, &loop, &QEventLoop::quit);
+#else
     connect(targetSocket,
             static_cast<void (QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
             &loop, &QEventLoop::quit);
+#endif
     const auto socketDataHandler = [targetSocket, &clientDataReceivedByServer, &loop] {
         clientDataReceivedByServer += targetSocket->readAll();
         if (clientDataReceivedByServer == testData)
@@ -676,8 +684,13 @@ void tst_Ssh::sftp()
         QFile file(dirForFilesToUpload.path() + QLatin1Char('/') + fileName);
         QVERIFY2(file.open(QIODevice::WriteOnly), qPrintable(file.errorString()));
         int content[1024 / sizeof(int)];
-        for (size_t j = 0; j < sizeof content / sizeof content[0]; ++j)
+        for (size_t j = 0; j < sizeof content / sizeof content[0]; ++j) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+            content[j] = QRandomGenerator::system()->generate();
+#else
             content[j] = qrand();
+#endif
+        }
         file.write(reinterpret_cast<char *>(content), sizeof content);
         file.close();
         QVERIFY2(file.error() == QFile::NoError, qPrintable(file.errorString()));
@@ -695,8 +708,13 @@ void tst_Ssh::sftp()
     const int blockCount = bigFileSize / blockSize;
     for (int block = 0; block < blockCount; ++block) {
         int content[blockSize / sizeof(int)];
-        for (size_t j = 0; j < sizeof content / sizeof content[0]; ++j)
+        for (size_t j = 0; j < sizeof content / sizeof content[0]; ++j) {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+            content[j] = QRandomGenerator::system()->generate();
+#else
             content[j] = qrand();
+#endif
+        }
         bigFile.write(reinterpret_cast<char *>(content), sizeof content);
     }
     bigFile.close();
@@ -952,7 +970,11 @@ static QFileInfoList systemPath()
 #endif
 
     const QStringList pathComponents = QString::fromLocal8Bit(qgetenv("PATH"))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+            .split(separator, Qt::SkipEmptyParts);
+#else
             .split(separator, QString::SkipEmptyParts);
+#endif
 
     QFileInfoList ret;
     for (const QString &component : pathComponents) {

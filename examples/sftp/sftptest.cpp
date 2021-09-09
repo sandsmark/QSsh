@@ -137,7 +137,7 @@ void SftpTest::handleChannelInitialized()
 
     std::cout << "Creating " << m_parameters.smallFileCount
         << " files of 1 KB each ..." << std::endl;
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+#if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
     qsrand(QDateTime::currentDateTime().toTime_t());
 #endif
     for (int i = 0; i < m_parameters.smallFileCount; ++i) {
