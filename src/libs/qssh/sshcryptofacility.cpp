@@ -246,7 +246,7 @@ void SshEncryptionFacility::createAuthenticationKey(const QByteArray &privKeyFil
             "Format not understood."));
     }
 
-    foreach (const BigInt &b, allKeyParams) {
+    for (const BigInt &b : allKeyParams) {
         if (b.is_zero()) {
             throw SshClientException(SshKeyFileError,
                 SSH_TR("Decoding of private key file failed: Invalid zero parameter."));
@@ -260,8 +260,9 @@ void SshEncryptionFacility::createAuthenticationKey(const QByteArray &privKeyFil
         m_authPubKeyBlob += AbstractSshPacket::encodeString(
                     convertByteArray(ecdsaKey->public_point().encode(PointGFp::UNCOMPRESSED)));
     } else {
-        foreach (const BigInt &b, pubKeyParams)
+        for (const BigInt &b : pubKeyParams) {
             m_authPubKeyBlob += AbstractSshPacket::encodeMpInt(b);
+        }
     }
     m_cachedPrivKeyContents = privKeyFileContents;
 }

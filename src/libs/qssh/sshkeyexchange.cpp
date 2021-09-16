@@ -64,8 +64,9 @@ namespace {
     void printNameList(const char *listName, const SshNameList &list)
     {
         qCDebug(sshLog, "%s:", listName);
-        foreach (const QByteArray &name, list.names)
+        for (const QByteArray &name : list.names) {
             qCDebug(sshLog, "%s", name.constData());
+        }
     }
 
     void printData(const char *name, const QByteArray &data)

@@ -171,8 +171,9 @@ void SshKeyGenerator::generateOpenSslPublicKeyString(const KeyPtr &key)
     }
 
     QByteArray publicKeyBlob = AbstractSshPacket::encodeString(keyId);
-    foreach (const BigInt &b, params)
+    for (const BigInt &b : params) {
         publicKeyBlob += AbstractSshPacket::encodeMpInt(b);
+    }
     if (!q.isEmpty()) {
         publicKeyBlob += AbstractSshPacket::encodeString(keyId.mid(11)); // Without "ecdsa-sha2-" prefix.
         publicKeyBlob += AbstractSshPacket::encodeString(q);
@@ -215,8 +216,9 @@ void SshKeyGenerator::generateOpenSslPrivateKeyString(const KeyPtr &key)
 
     DER_Encoder encoder;
     encoder.start_cons(SEQUENCE).encode(size_t(0));
-    foreach (const BigInt &b, params)
+    for (const BigInt &b : params) {
         encoder.encode(b);
+    }
     encoder.end_cons();
     m_privateKey = QByteArray(PEM_Code::encode (encoder.get_contents(), label).c_str());
 }

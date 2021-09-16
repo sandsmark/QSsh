@@ -305,7 +305,7 @@ void SshRemoteProcessPrivate::startProcess(const X11DisplayInfo &displayInfo)
     if (m_procState != NotYetStarted)
         return;
 
-    foreach (const EnvVar &envVar, m_env) {
+    for (const EnvVar &envVar : m_env) {
         m_sendFacility.sendEnvPacket(remoteChannel(), envVar.first,
             envVar.second);
     }

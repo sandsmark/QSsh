@@ -71,7 +71,7 @@ bool SshHostKeyDatabase::load(const QString &filePath, QString *error)
     const QByteArray content = file.readAll().trimmed();
     if (content.isEmpty())
         return true;
-    foreach (const QByteArray &line, content.split('\n')) {
+    for (const QByteArray &line : content.split('\n')) {
         const QList<QByteArray> &lineData = line.trimmed().split(' ');
         if (lineData.count() != 2) {
             qCDebug(Internal::sshLog, "Unexpected line \"%s\" in file \"%s\".", line.constData(),

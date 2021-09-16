@@ -174,8 +174,9 @@ void SshOutgoingPacket::generateUserAuthInfoResponsePacket(const QStringList &re
 {
     // RFC 4256, 3.4
     init(SSH_MSG_USERAUTH_INFO_RESPONSE).appendInt(responses.count());
-    foreach (const QString &response, responses)
+    for (const QString &response : responses) {
         appendString(response.toUtf8());
+    }
     finalize();
 }
 

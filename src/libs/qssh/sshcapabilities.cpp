@@ -42,10 +42,12 @@ namespace {
     QByteArray listAsByteArray(const QList<QByteArray> &list)
     {
         QByteArray array;
-        foreach(const QByteArray &elem, list)
+        for (const QByteArray &elem : list) {
             array += elem + ',';
-        if (!array.isEmpty())
+        }
+        if (!array.isEmpty()) {
             array.remove(array.count() - 1, 1);
+        }
         return array;
     }
 } // anonymous namspace
@@ -111,9 +113,10 @@ QList<QByteArray> SshCapabilities::commonCapabilities(const QList<QByteArray> &m
                                                const QList<QByteArray> &serverCapabilities, const QByteArray &group)
 {
     QList<QByteArray> capabilities;
-    foreach (const QByteArray &myCapability, myCapabilities) {
-        if (serverCapabilities.contains(myCapability))
+    for (const QByteArray &myCapability : myCapabilities) {
+        if (serverCapabilities.contains(myCapability)) {
             capabilities << myCapability;
+        }
     }
 
     if (!capabilities.isEmpty())

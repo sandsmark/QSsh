@@ -172,8 +172,9 @@ SftpOutgoingPacket &SftpOutgoingPacket::generateOpenFile(const QString &path,
     }
 
     init(SSH_FXP_OPEN, requestId).appendString(path).appendInt(pFlags);
-    foreach (const quint32 attribute, attributes)
+    for (const quint32 attribute : attributes) {
         appendInt(attribute);
+    }
     return finalize();
 }
 

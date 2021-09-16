@@ -337,9 +337,10 @@ void SftpFileSystemModel::handleFileInfo(SftpJobId jobId, const QList<SftpFileIn
     SftpDirNode * const parentNode = d->lsOps.value(jobId);
     QSSH_ASSERT_AND_RETURN(parentNode);
     QList<SftpFileInfo> filteredList;
-    foreach (const SftpFileInfo &fi, fileInfoList) {
-        if (fi.name != QLatin1String(".") && fi.name != QLatin1String(".."))
+    for (const SftpFileInfo &fi : fileInfoList) {
+        if (fi.name != QLatin1String(".") && fi.name != QLatin1String("..")) {
             filteredList << fi;
+        }
     }
     if (filteredList.isEmpty())
         return;
@@ -352,12 +353,13 @@ void SftpFileSystemModel::handleFileInfo(SftpJobId jobId, const QList<SftpFileIn
         beginInsertRows(QModelIndex(), 0, 1);
     }
 
-    foreach (const SftpFileInfo &fileInfo, filteredList) {
+    for (const SftpFileInfo &fileInfo : filteredList) {
         SftpFileNode *childNode;
-        if (fileInfo.type == FileTypeDirectory)
+        if (fileInfo.type == FileTypeDirectory) {
             childNode = new SftpDirNode;
-        else
+        } else {
             childNode = new SftpFileNode;
+        }
         childNode->path = parentNode->path;
         if (!childNode->path.endsWith(QLatin1Char('/')))
             childNode->path += QLatin1Char('/');

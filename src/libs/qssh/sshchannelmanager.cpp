@@ -307,7 +307,7 @@ void SshChannelManager::handleChannelOpenForwardedTcpIp(
 
     SshTcpIpForwardServer::Ptr server;
 
-    foreach (const SshTcpIpForwardServer::Ptr &candidate, m_listeningForwardServers) {
+    for (const SshTcpIpForwardServer::Ptr &candidate : m_listeningForwardServers) {
         if (candidate->port() == channelOpen.remotePort
                 && candidate->bindAddress().toUtf8() == channelOpen.remoteAddress) {
             server = candidate;
@@ -322,7 +322,7 @@ void SshChannelManager::handleChannelOpenForwardedTcpIp(
         // different DNS servers, ...
         // Rather than trying to figure that out, we just use the first listening forwarder with the
         // same port.
-        foreach (const SshTcpIpForwardServer::Ptr &candidate, m_listeningForwardServers) {
+        for (const SshTcpIpForwardServer::Ptr &candidate : m_listeningForwardServers) {
             if (candidate->port() == channelOpen.remotePort) {
                 server = candidate;
                 break;

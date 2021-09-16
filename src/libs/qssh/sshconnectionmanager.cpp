@@ -72,7 +72,7 @@ public:
 
     ~SshConnectionManager()
     {
-        foreach (const UnaquiredConnection &connection, m_unacquiredConnections) {
+        for (const UnaquiredConnection &connection : m_unacquiredConnections) {
             disconnect(connection.connection, nullptr, this, nullptr);
             delete connection.connection;
         }
@@ -86,7 +86,7 @@ public:
         QMutexLocker locker(&m_listMutex);
 
         // Check in-use connections:
-        foreach (SshConnection * const connection, m_acquiredConnections) {
+        for (SshConnection * const connection : m_acquiredConnections) {
             if (connection->connectionParameters() != sshParams)
                 continue;
 
@@ -101,7 +101,7 @@ public:
         }
 
         // Check cached open connections:
-        foreach (const UnaquiredConnection &c, m_unacquiredConnections) {
+        for (const UnaquiredConnection &c : m_unacquiredConnections) {
             SshConnection * const connection = c.connection;
             if (connection->state() != SshConnection::Connected
                     || connection->connectionParameters() != sshParams)
@@ -151,7 +151,7 @@ public:
             // if the clients were running in different threads. Only keep one of them in
             // such a case.
             bool haveConnection = false;
-            foreach (const UnaquiredConnection &c, m_unacquiredConnections) {
+            for (const UnaquiredConnection &c : m_unacquiredConnections) {
                 if (c.connection->connectionParameters() == connection->connectionParameters()) {
                     haveConnection = true;
                     break;
@@ -186,7 +186,7 @@ public:
             }
         }
 
-        foreach (SshConnection * const connection, m_acquiredConnections) {
+        for (SshConnection * const connection : m_acquiredConnections) {
             if (connection->connectionParameters() == sshParams) {
                 if (!m_deprecatedConnections.contains(connection))
                     m_deprecatedConnections.append(connection);

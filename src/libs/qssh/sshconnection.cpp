@@ -859,7 +859,7 @@ void SshConnectionPrivate::tryAllAgentKeys()
         throw SshClientException(SshAuthenticationError, tr("ssh-agent has no keys."));
     qCDebug(sshLog) << "trying authentication with" << keys.count()
                     << "public keys received from agent";
-    foreach (const QByteArray &key, keys) {
+    for (const QByteArray &key : keys) {
         m_sendFacility.sendQueryPublicKeyPacket(m_connParams.userName().toUtf8(),
                                                 SshCapabilities::SshConnectionService, key);
         m_pendingKeyChecks.enqueue(key);

@@ -564,7 +564,7 @@ void SftpChannelPrivate::handleMkdirStatus(JobMap::Iterator it,
     QDir localDir(dirIt.value().localDir);
     const QFileInfoList &dirInfos
         = localDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
-    foreach (const QFileInfo &dirInfo, dirInfos) {
+    for (const QFileInfo &dirInfo : dirInfos) {
         const QString remoteSubDir = remoteDir + QLatin1Char('/') + dirInfo.fileName();
         const SftpMakeDir::Ptr mkdirOp(
             new SftpMakeDir(++m_nextJobId, remoteSubDir, parentJob));
@@ -574,7 +574,7 @@ void SftpChannelPrivate::handleMkdirStatus(JobMap::Iterator it,
     }
 
     const QFileInfoList &fileInfos = localDir.entryInfoList(QDir::Files);
-    foreach (const QFileInfo &fileInfo, fileInfos) {
+    for (const QFileInfo &fileInfo : fileInfos) {
         QSharedPointer<QFile> localFile(new QFile(fileInfo.absoluteFilePath()));
         if (!localFile->open(QIODevice::ReadOnly)) {
             parentJob->setError();
@@ -946,7 +946,7 @@ void SftpChannelPrivate::handleDownloadDir(SftpListDir::Ptr op,
         return;
     }
 
-    foreach (SftpFileInfo fileInfo, fileInfoList) {
+    for (SftpFileInfo fileInfo : fileInfoList) {
         Internal::SftpDownloadDir::Dir dir = op->parentJob->lsdirsInProgress[op];
         QString fullPathRemote = QDir(dir.remoteDir).path() + QLatin1Char('/') + fileInfo.name;
         QString fullPathLocal = QDir(dir.localDir).path() + QLatin1Char('/') + fileInfo.name;
