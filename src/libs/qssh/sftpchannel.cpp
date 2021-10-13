@@ -249,7 +249,7 @@ SftpJobId SftpChannel::uploadDir(const QString &localDirPath,
     const Internal::SftpUploadDir::Ptr uploadDirOp(
         new Internal::SftpUploadDir(++d->m_nextJobId));
     const QString remoteDirPath
-        = remoteParentDirPath + QLatin1Char('/') + localDir.dirName();
+        = remoteParentDirPath + u'/' + localDir.dirName();
     const Internal::SftpMakeDir::Ptr mkdirOp(
         new Internal::SftpMakeDir(++d->m_nextJobId, remoteDirPath, uploadDirOp));
     uploadDirOp->mkdirsInProgress.insert(mkdirOp,
@@ -565,7 +565,7 @@ void SftpChannelPrivate::handleMkdirStatus(JobMap::Iterator it,
     const QFileInfoList &dirInfos
         = localDir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
     for (const QFileInfo &dirInfo : dirInfos) {
-        const QString remoteSubDir = remoteDir + QLatin1Char('/') + dirInfo.fileName();
+        const QString remoteSubDir = remoteDir + u'/' + dirInfo.fileName();
         const SftpMakeDir::Ptr mkdirOp(
             new SftpMakeDir(++m_nextJobId, remoteSubDir, parentJob));
         parentJob->mkdirsInProgress.insert(mkdirOp,
@@ -586,7 +586,7 @@ void SftpChannelPrivate::handleMkdirStatus(JobMap::Iterator it,
             return;
         }
 
-        const QString remoteFilePath = remoteDir + QLatin1Char('/') + fileInfo.fileName();
+        const QString remoteFilePath = remoteDir + u'/' + fileInfo.fileName();
         SftpUploadFile::Ptr uploadFileOp(new SftpUploadFile(++m_nextJobId,
             remoteFilePath, localFile, SftpOverwriteExisting, parentJob));
         createJob(uploadFileOp);
@@ -948,8 +948,8 @@ void SftpChannelPrivate::handleDownloadDir(SftpListDir::Ptr op,
 
     for (SftpFileInfo fileInfo : fileInfoList) {
         Internal::SftpDownloadDir::Dir dir = op->parentJob->lsdirsInProgress[op];
-        QString fullPathRemote = QDir(dir.remoteDir).path() + QLatin1Char('/') + fileInfo.name;
-        QString fullPathLocal = QDir(dir.localDir).path() + QLatin1Char('/') + fileInfo.name;
+        QString fullPathRemote = QDir(dir.remoteDir).path() + u'/' + fileInfo.name;
+        QString fullPathLocal = QDir(dir.localDir).path() + u'/' + fileInfo.name;
 
         if (fileInfo.type == FileTypeRegular) {
             QSharedPointer<QFile> localFile(new QFile(fullPathLocal));
@@ -961,7 +961,7 @@ void SftpChannelPrivate::handleDownloadDir(SftpListDir::Ptr op,
             createJob(downloadJob);
 
         } else if (fileInfo.type == FileTypeDirectory) {
-            if (fileInfo.name == QLatin1String(".") || fileInfo.name == QLatin1String("..")) {
+            if (fileInfo.name == u"." || fileInfo.name == u"..") {
                 continue;
             }
 
