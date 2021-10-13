@@ -103,6 +103,8 @@ class SshAbstractCryptoFacility;
 
 class AbstractSshPacket
 {
+    Q_DISABLE_COPY(AbstractSshPacket)
+
 public:
     virtual ~AbstractSshPacket();
 

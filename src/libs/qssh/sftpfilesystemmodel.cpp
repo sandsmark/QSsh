@@ -46,6 +46,8 @@ namespace {
 class SftpDirNode;
 class SftpFileNode
 {
+    Q_DISABLE_COPY(SftpFileNode)
+
 public:
     SftpFileNode() : parent(nullptr) { }
     virtual ~SftpFileNode() { }
@@ -57,6 +59,8 @@ public:
 
 class SftpDirNode : public SftpFileNode
 {
+    Q_DISABLE_COPY(SftpDirNode)
+
 public:
     SftpDirNode() : lsState(LsNotYetCalled) { }
     ~SftpDirNode() { qDeleteAll(children); }

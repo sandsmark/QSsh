@@ -89,6 +89,7 @@ void SshChannelManager::handleChannelOpenFailure(const SshIncomingPacket &packet
    try {
        it.value()->handleOpenFailure(failure.reasonString);
    } catch (const SshServerException &e) {
+       Q_UNUSED(e);
        removeChannel(it);
        throw;
    }
