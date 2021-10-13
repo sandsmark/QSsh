@@ -92,7 +92,21 @@ SshConnectionParameters ArgumentsCollector::collect(bool &success) const
 
         if (!authTypeGiven) {
             parameters.authenticationType = SshConnectionParameters::AuthenticationTypePublicKey;
-            parameters.privateKeyFile = QDir::homePath() + QLatin1String("/.ssh/id_rsa");
+            const QStringList keyNames = {
+                QStringLiteral("id_ed25519"),
+                QStringLiteral("id_rsa"),
+                QStringLiteral("id_dsa"),
+            };
+            for (const QString &keyName : keyNames) {
+                const QString path = QDir::homePath() + QStringLiteral("/.ssh/") + keyName;
+                if (QFile::exists(path)) {
+                    parameters.privateKeyFile = path;
+                    break;
+                }
+            }
+            if (parameters.privateKeyFile.isEmpty()) {
+                throw ArgumentErrorException(QStringLiteral("No auth method given, and no private key found"));
+            }
         }
 
         if (parameters.userName().isEmpty())
