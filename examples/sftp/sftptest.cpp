@@ -30,6 +30,7 @@
 
 #include "sftptest.h"
 
+#include <cstdlib>
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QDir>
@@ -151,11 +152,7 @@ void SftpTest::handleChannelInitialized()
         if (success) {
             int content[1024/sizeof(int)];
             for (size_t j = 0; j < sizeof content / sizeof content[0]; ++j)
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
-                content[j] = QRandomGenerator::system()->generate();
-#else
-                content[j] = qrand();
-#endif
+                content[j] = rand();
             file->write(reinterpret_cast<char *>(content), sizeof content);
             file->close();
         }
@@ -302,11 +299,7 @@ void SftpTest::handleSftpJobFinished(SftpJobId job, const SftpError errorType, c
             for (quint64 block = 0; block < blockCount; ++block) {
                 int content[blockSize/sizeof(int)];
                 for (size_t j = 0; j < sizeof content / sizeof content[0]; ++j) {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
-                    content[j] = QRandomGenerator::system()->generate();
-#else
-                    content[j] = qrand();
-#endif
+                    content[j] = rand();
                 }
                 m_localBigFile->write(reinterpret_cast<char *>(content),
                     sizeof content);
