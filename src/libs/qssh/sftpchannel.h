@@ -202,11 +202,11 @@ public:
     /*!
      * \brief Uploads a local directory (recursively) with files to the remote host
      * \param localDirPath The path to an existing local directory
-     * \param remoteParentDirPath The remote path to upload it to, the name of the local directory will be appended to this
+     * \param remoteParentDirPath The remote path to upload it to, the name of the local directory will be appended to this if appendDirPath is set
      * \return A unique ID identifying this job
      */
     SftpJobId uploadDir(const QString &localDirPath,
-        const QString &remoteParentDirPath);
+        const QString &remoteParentDirPath, bool appendDirPath = true);
 
     /*!
      * \brief Downloads a remote directory (recursively) to a local path

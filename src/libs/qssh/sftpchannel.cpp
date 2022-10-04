@@ -239,7 +239,7 @@ SftpJobId SftpChannel::downloadFile(const QString &remoteFilePath, QSharedPointe
 }
 
 SftpJobId SftpChannel::uploadDir(const QString &localDirPath,
-    const QString &remoteParentDirPath)
+    const QString &remoteParentDirPath, bool appendDirPath)
 {
     if (state() != Initialized)
         return SftpInvalidJob;
@@ -248,8 +248,10 @@ SftpJobId SftpChannel::uploadDir(const QString &localDirPath,
         return SftpInvalidJob;
     const Internal::SftpUploadDir::Ptr uploadDirOp(
         new Internal::SftpUploadDir(++d->m_nextJobId));
-    const QString remoteDirPath
-        = remoteParentDirPath + u'/' + localDir.dirName();
+    QString remoteDirPath = remoteParentDirPath;
+    if (appendDirPath) {
+        remoteDirPath += u'/' + localDir.dirName();
+    }
     const Internal::SftpMakeDir::Ptr mkdirOp(
         new Internal::SftpMakeDir(++d->m_nextJobId, remoteDirPath, uploadDirOp));
     uploadDirOp->mkdirsInProgress.insert(mkdirOp,
