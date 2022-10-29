@@ -1,0 +1,5 @@
+set(QSsh_VERSION @PROJECT_VERSION@)
+
+# see https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html for more details
+@PACKAGE_INIT@
+

@@ -6,6 +6,9 @@ project(QSsh VERSION 1.0 LANGUAGES CXX)
 # use GNU installation dirs
 include(GNUInstallDirs)
 
+# use package configuration helpers
+include(CMakePackageConfigHelpers)
+
 # cached variables
 set(QSSH_BUILD_EXAMPLES True CACHE BOOL "Build the QSsh examples.")
 set(BUILD_SHARED_LIBS False CACHE BOOL "Build QSsh using shared libraries.")
@@ -62,13 +65,22 @@ if(QSSH_BUILD_EXAMPLES)
   add_subdirectory(examples)
 endif()
 
-# INSTALL RULES
-#install(EXPORT QSsh-targets DESTINATION ${CMAKE_INSTALL_BINDIR})
+# install rules
 install(EXPORT QSsh-targets
   FILE QSshTargets.cmake
   NAMESPACE QSsh::
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/QSsh/cmake
 )
 
-install(FILES "${CMAKE_SOURCE_DIR}/cmakeFindModules/QSshConfig.cmake"
+# create package configuration files
+configure_package_config_file(QSshConfig.cmake.in
+  "${CMAKE_INSTALL_DATAROOTDIR}/QSsh/cmake/QSshConfig.cmake"
+  INSTALL_DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/QSsh/cmake
+  )
+write_basic_package_version_file("${CMAKE_INSTALL_DATAROOTDIR}/QSsh/cmake/QSshConfigVersion.cmake"
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY ExactVersion)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/QSsh/cmake/QSshConfig.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_INSTALL_DATAROOTDIR}/QSsh/cmake/QSshConfigVersion.cmake"
         DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/QSsh/cmake)
