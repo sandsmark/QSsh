@@ -3,3 +3,6 @@ set(QSsh_VERSION @PROJECT_VERSION@)
 # see https://cmake.org/cmake/help/latest/module/CMakePackageConfigHelpers.html for more details
 @PACKAGE_INIT@
 
+include("${CMAKE_CURRENT_LIST_DIR}/QSshTargets.cmake")
+
+check_required_components(QSsh)
