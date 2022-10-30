@@ -1,4 +1,9 @@
-add_library(QSsh
+set(LIBTYPE STATIC)
+if(BUILD_SHARED_LIBS)
+  set(LIBTYPE SHARED)
+endif()
+
+add_library(QSsh ${LIBTYPE}
     sshsendfacility.cpp
     sshremoteprocess.cpp
     sshpacketparser.cpp
@@ -35,7 +40,7 @@ add_library(QSsh
     qssh.qrc)
 
 get_property(BOTAN_LIB GLOBAL PROPERTY BOTAN_LIB)
-target_link_libraries( QSsh Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Widgets ${BOTAN_LIB})
+target_link_libraries(QSsh Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Widgets ${BOTAN_LIB})
 
 # state that anybody linking to us needs to include the current source dir
 target_include_directories(QSsh
@@ -49,8 +54,8 @@ target_include_directories(QSsh
 #INSTALL RULES
 install(
   DIRECTORY .
-  DESTINATION include
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/qssh
   COMPONENT headers
   FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h"
 )
-install(TARGETS QSsh DESTINATION lib EXPORT QSsh-targets)
+install(TARGETS QSsh DESTINATION ${CMAKE_INSTALL_LIBDIR} EXPORT QSsh-targets)
