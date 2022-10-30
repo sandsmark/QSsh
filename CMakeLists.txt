@@ -25,6 +25,7 @@ if(NOT "${BOTAN_LIBRARY}" STREQUAL "")
   add_library(Botan2 UNKNOWN IMPORTED)
   if(WIN32)
     set_property(TARGET Botan2 PROPERTY IMPORTED_IMPLIB "${BOTAN_LIBRARY}")
+    set_property(TARGET Botan2 PROPERTY IMPORTED_LOCATION "${BOTAN_LIBRARY}") # the location should be the .dll, but we don't care about its location. However CMake requires IMPORTED_LOCATED to be set to 'something'
   else()
     set_property(TARGET Botan2 PROPERTY IMPORTED_LOCATION "${BOTAN_LIBRARY}")
   endif()
